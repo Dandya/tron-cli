@@ -21,7 +21,6 @@ void handler(int none)
 {
   work_flag = 0;
 }
-
 struct args_keys
 {
   int* xstep;
@@ -180,7 +179,7 @@ int main(int argc, char *argv[])
     pthread_mutex_unlock(&mutex);
 
     color++;
-    usleep(10000);
+    usleep(62500);
   }
   if( pthread_join(tid, NULL) != 0 )
   {
