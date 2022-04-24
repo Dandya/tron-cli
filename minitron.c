@@ -17,6 +17,7 @@ int main(int argc, char** argv)
   opponent_addr.sin_port = htons(12345);
   opponent_addr.sin_addr.s_addr = inet_addr(argv[1]);
 
+  bind(sockfd, (struct sockaddr*)&opponent_addr, sizeof(opponent_addr));
   
   pthread_t tid_control, tid_syncing;
   pthread_attr_t attr;

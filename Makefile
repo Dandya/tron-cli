@@ -1,4 +1,4 @@
-all: zmeyka.exe
+all: zmeyka.exe minitron.exe
 
 %.exe:%.c
 	@gcc $< -lncurses -lpthread -o $@
