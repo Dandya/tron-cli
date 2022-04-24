@@ -3,12 +3,8 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-int thread_server()
+int control_thread(int socketds)
 {
     
 }
 
-int thread_client()
-{
-
-}
