@@ -15,7 +15,7 @@ int main(int argc, char** argv)
   
   opponent_addr.sin_family = AF_INET;
   opponent_addr.sin_port = htons(12345);
-  opponent_addr.sin_addr.s_addr = INADDR_ANY;//inet_addr(argv[1]);
+  opponent_addr.sin_addr.s_addr = inet_addr(argv[1]);
  
   server_addr.sin_family = AF_INET;
   server_addr.sin_port = htons(12345);
