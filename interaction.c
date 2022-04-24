@@ -28,7 +28,7 @@ void control_thread(struct args_keys* args)
       direct_new_p1 = ch; 
       sendto(sockfd, (const char*) &ch, 1, 0, (struct sockaddr*)ptr_p2_addr, len_sockaddr);
       //debug
-      printf("I push: %c\n", direct_new_p1);    
+      printf("I push: %c, %ld\n", direct_new_p1, ptr_p2_addr->sin_addr.s_addr);    
       //end debub
       pthread_mutex_unlock(ptr_mtx);
     }

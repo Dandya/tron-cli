@@ -11,7 +11,7 @@ int main(int argc, char** argv)
   int sockfd;
   struct sockaddr_in opponent_addr, server_addr;
   
-  sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+  sockfd = socket(AF_INET, SOCK_DGRAM, 0);
   
   opponent_addr.sin_family = AF_INET;
   opponent_addr.sin_port = htons(12345);
