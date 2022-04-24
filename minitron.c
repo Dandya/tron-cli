@@ -9,15 +9,19 @@ char direct_new_p2= LEFT;
 int main(int argc, char** argv)
 {
   int sockfd;
-  struct sockaddr_in opponent_addr;
+  struct sockaddr_in opponent_addr, server_addr;
   
   sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
   
   opponent_addr.sin_family = AF_INET;
   opponent_addr.sin_port = htons(12345);
   opponent_addr.sin_addr.s_addr = inet_addr(argv[1]);
+ 
+  server_addr.sin_family = AF_INET;
+  server_addr.sin_port = htons(12345);
+  server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-  bind(sockfd, (struct sockaddr*)&opponent_addr, sizeof(opponent_addr));
+  bind(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr));
   
   pthread_t tid_control, tid_syncing;
   pthread_attr_t attr;
