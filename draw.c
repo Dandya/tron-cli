@@ -1,4 +1,3 @@
-int draw_car(uint32_t* ptr, int x, int y, char direction, uint32_t color);
 int delete_car(uint32_t* ptr, int x, int y, char direction);
 
 void draw_area(uint32_t *ptr, int xres, int yres, int scr_xres, int scr_yres)
@@ -13,5 +12,10 @@ void draw_area(uint32_t *ptr, int xres, int yres, int scr_xres, int scr_yres)
       ptr[i*scr_yres] = 0x00FFFFFF;
       ptr[i*scr_yres+(xres+1)] = 0x00FFFFFF;
   }
+}
+
+int draw_car(uint32_t* ptr, int x, int y, char direction, uint32_t color)
+{
+    return 0;
 }
 

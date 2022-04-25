@@ -6,6 +6,7 @@
  * TODO: 
  * 1) Проверка на размеры экрана (+2 пикселя для каждой координаты)
  * 2) Сравние IP
+ * 3) Ввод размеров поля
 */
 
 int work_flag= 1;
@@ -98,17 +99,10 @@ int main(int argc, char* argv[])
     return 2;
   }
 //  printf("Threads created\n"); 
-  refresh();
-  for(int i = 0; i<500+2; i++)
-  {
-      ptr[i] = 0x00FFFFFF;
-      ptr[i+(300+1)*info.yres_virtual] = 0x00FFFFFF;
-  }
-  while(ptr[0] != 0x00FFFFFF)
-      ptr[0] = 0x00FFFFFF;
+//  refresh();
+draw_area(ptr+info.xres/2-603/2 + info.yres_virtual*(info.yres/2 -501/2), 603, 501, info.xres, info.yres_virtual);
   while(work_flag)
   { 
- // draw_area(ptr, 500, 300, info.xres_virtual, info.yres_virtual);
     usleep(62500);
     pthread_mutex_lock(&mutex);
     pthread_mutex_unlock(&mutex);
