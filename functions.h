@@ -11,7 +11,7 @@
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
-//#include <ncurses.h>
+#include <ncurses.h>
 #include <pthread.h>
 #define UP 'w'
 #define DOWN 's'
@@ -19,3 +19,4 @@
 #define RIGHT 'd'
 
 #include "interaction.c"
+#include "draw.c"

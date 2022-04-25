@@ -21,6 +21,7 @@ void handler(int none)
 {
   work_flag = 0;
 }
+
 struct args_keys
 {
   int* xstep;
@@ -79,7 +80,7 @@ int main(int argc, char *argv[])
 
   signal(SIGINT, handler);
   
-  color = 0x30;
+  color = 0x00FFFFFF;
   xstep = ystep = 1;
   page_size = sysconf(_SC_PAGESIZE);
   
@@ -178,7 +179,6 @@ int main(int argc, char *argv[])
 
     pthread_mutex_unlock(&mutex);
 
-    color++;
     usleep(62500);
   }
   if( pthread_join(tid, NULL) != 0 )
