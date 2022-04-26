@@ -1,4 +1,4 @@
-void draw_area(uint32_t *ptr, int xres, int yres, int scr_xres, int scr_yres)
+void draw_area(uint32_t *ptr, int xres, int yres, int scr_xres)
 {
   for(int i = 0; i<xres+2; i++)
   {
