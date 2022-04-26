@@ -17,7 +17,7 @@ int draw_car(uint32_t* ptr, char direction, uint32_t color)
     switch (direction)
     {
         case UP:
-            
+            for(int i = 0; i>; i )
             break;
         case DOWN:
             
