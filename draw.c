@@ -21,8 +21,9 @@ int draw_car(uint32_t* ptr, char direction, uint32_t color, int src_xres)
         case UP:
             for(int i = 0; i>-8; i--)
             {
-                for(int j)
-                ptr[-2+i*src_xres]=ptr[]
+                if( (ptr[-2+i*src_xres]+=
+                    )
+                
             }
             break;
         case DOWN:
