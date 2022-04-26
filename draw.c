@@ -14,7 +14,11 @@ void draw_area(uint32_t *ptr, int xres, int yres, int scr_xres, int scr_yres)
 
 int draw_car(uint32_t* ptr, int x, int y, char direction, uint32_t color)
 {
-    
+    switch (direction)
+    {
+        case UP:
+            
+    }
     return 0;
 }
 
