@@ -76,49 +76,41 @@ int delete_car(uint32_t* ptr, char direction, uint32_t src_xres)
         case UP:
             for(int i = 0; i>-8; i--)
             {
-                if( (ptr[-2+i*src_xres]+=color) != color ||
-                    (ptr[-1+i*src_xres]+=color) != color ||
-                    (ptr[i*src_xres]+=color) != color ||
-                    (ptr[1+i*src_xres]+=color) != color ||
-                    (ptr[2+i*src_xres]+=color) != color
-                    )
-                    was_overlap = 1;
+                ptr[-2+i*src_xres] = BLACK;
+                ptr[-1+i*src_xres] = BLACK;
+                ptr[i*src_xres] = BLACK;
+                ptr[1+i*src_xres] = BLACK;
+                ptr[2+i*src_xres] = BLACK;
             }
             break;
         case DOWN:
             for(int i = 0; i<8; i++)
             {
-                if( (ptr[-2+i*src_xres]+=color) != color ||
-                    (ptr[-1+i*src_xres]+=color) != color ||
-                    (ptr[i*src_xres]+=color) != color ||
-                    (ptr[1+i*src_xres]+=color) != color ||
-                    (ptr[2+i*src_xres]+=color) != color
-                    )
-                    was_overlap = 1;
+                ptr[-2+i*src_xres] = BLACK;
+                ptr[-1+i*src_xres] = BLACK;
+                ptr[i*src_xres] = BLACK;
+                ptr[1+i*src_xres] = BLACK;
+                ptr[2+i*src_xres] = BLACK;
             }
             break;
         case LEFT:
             for(int i = 0; i>-8; i--)
             {
-                if( (ptr[-2*src_xres+i]+=color) != color ||
-                    (ptr[-1*src_xres+i]+=color) != color ||
-                    (ptr[i]+=color) != color ||
-                    (ptr[src_xres+i]+=color) != color ||
-                    (ptr[2*src_xres+i]+=color) != color
-                    )
-                    was_overlap = 1;
+                ptr[-2*src_xres+i] = BLACK;
+                ptr[-1*src_xres+i] = BLACK;
+                ptr[i] = BLACK;
+                ptr[1*src_xres+i] = BLACK;
+                ptr[2*src_xres+i] = BLACK
             }
             break;
         case RIGHT:
             for(int i = 0; i<8; i++)
             {
-                if( (ptr[-2*src_xres+i]+=color) != color ||
-                    (ptr[-1*src_xres+i]+=color) != color ||
-                    (ptr[i]+=color) != color ||
-                    (ptr[src_xres+i]+=color) != color ||
-                    (ptr[2*src_xres+i]+=color) != color
-                    )
-                    was_overlap = 1;
+                ptr[-2*src_xres+i] = BLACK;
+                ptr[-1*src_xres+i] = BLACK;
+                ptr[i] = BLACK;
+                ptr[1*src_xres+i] = BLACK;
+                ptr[2*src_xres+i] = BLACK
             }
             break;
     }
