@@ -16,9 +16,11 @@ void draw_area(uint32_t *ptr, int xres, int yres, int scr_xres, int scr_yres)
 
 int draw_car(uint32_t* ptr, char direction, uint32_t color, int src_xres)
 {
-    int result = 1;
+    int is_overlap = 0;
     switch (direction)
     {
+        case DOWN:
+            ptr = ptr + 8
         case UP:
             for(int i = 0; i>-8; i--)
             {
@@ -28,10 +30,10 @@ int draw_car(uint32_t* ptr, char direction, uint32_t color, int src_xres)
                     (ptr[1+i*src_xres]+=color) != color ||
                     (ptr[-2+i*src_xres]+=color) != color
                     )
-                
+                    is_overlap = 1;
             }
             break;
-        case DOWN:
+        
             
             break;
         case LEFT:
