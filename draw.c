@@ -16,7 +16,7 @@ void draw_area(uint32_t *ptr, int xres, int yres, int scr_xres, int scr_yres)
 
 int draw_car(uint32_t* ptr, char direction, uint32_t color, int src_xres)
 {
-    int is_overlap = 0;
+    int was_overlap = 0;
     switch (direction)
     {
         case UP:
@@ -28,7 +28,7 @@ int draw_car(uint32_t* ptr, char direction, uint32_t color, int src_xres)
                     (ptr[1+i*src_xres]+=color) != color ||
                     (ptr[2+i*src_xres]+=color) != color
                     )
-                    is_overlap = 1;
+                    was_overlap = 1;
             }
             break;
         case DOWN:
@@ -40,7 +40,7 @@ int draw_car(uint32_t* ptr, char direction, uint32_t color, int src_xres)
                     (ptr[1+i*src_xres]+=color) != color ||
                     (ptr[2+i*src_xres]+=color) != color
                     )
-                    is_overlap = 1;
+                    was_overlap = 1;
             }
             break;
         case LEFT:
@@ -52,7 +52,7 @@ int draw_car(uint32_t* ptr, char direction, uint32_t color, int src_xres)
                     (ptr[src_xres+i]+=color) != color ||
                     (ptr[2*src_xres+i]+=color) != color
                     )
-                    is_overlap = 1;
+                    was_overlap = 1;
             }
             break;
         case RIGHT:
@@ -64,10 +64,10 @@ int draw_car(uint32_t* ptr, char direction, uint32_t color, int src_xres)
                     (ptr[src_xres+i]+=color) != color ||
                     (ptr[2*src_xres+i]+=color) != color
                     )
-                    is_overlap = 1;
+                    was_overlap = 1;
             }
             break;
     }
-    return 0;
+    return was_overlap;
 }
 
