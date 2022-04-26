@@ -18,6 +18,16 @@ int draw_car(uint32_t* ptr, int x, int y, char direction, uint32_t color)
     {
         case UP:
             
+            break;
+        case DOWN:
+            
+            break;
+        case LEFT:
+            
+            break;
+        case RIGHT:
+            
+            break;
     }
     return 0;
 }
