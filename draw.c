@@ -1,5 +1,3 @@
-int delete_car(uint32_t* ptr, int x, int y, char direction);
-
 void draw_area(uint32_t *ptr, int xres, int yres, int scr_xres, int scr_yres)
 {
   for(int i = 0; i<xres+2; i++)
@@ -71,3 +69,7 @@ int draw_car(uint32_t* ptr, char direction, uint32_t color, int src_xres)
     return was_overlap;
 }
 
+int delete_car(uint32_t* ptr, char direction, uint32_t src_xres)
+{
+    
+}
