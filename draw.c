@@ -50,13 +50,22 @@ int draw_car(uint32_t* ptr, char direction, uint32_t color, int src_xres)
                     (ptr[-1*src_xres+i]+=color) != color ||
                     (ptr[i]+=color) != color ||
                     (ptr[src_xres+i]+=color) != color ||
-                    (ptr[-2+i*src_xres]+=color) != color
+                    (ptr[2*src_xres+i]+=color) != color
                     )
                     is_overlap = 1;
             }
             break;
         case RIGHT:
-            
+            for(int i = 0; i<8; i++)
+            {
+                if( (ptr[-2*src_xres+i]+=color) != color ||
+                    (ptr[-1*src_xres+i]+=color) != color ||
+                    (ptr[i]+=color) != color ||
+                    (ptr[src_xres+i]+=color) != color ||
+                    (ptr[2*src_xres+i]+=color) != color
+                    )
+                    is_overlap = 1;
+            }
             break;
     }
     return 0;
