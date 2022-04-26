@@ -13,10 +13,8 @@
 */
 
 int work_flag= 1;
-char direct_prev_p1 = RIGHT;
-char direct_new_p1 = RIGHT;
-char direct_prev_p2 = LEFT;
-char direct_new_p2= LEFT;
+char direct_p1 = RIGHT;
+char direct_p2= LEFT;
 
 void handler(int none)
 {
@@ -25,7 +23,7 @@ void handler(int none)
 
 int main(int argc, char* argv[])
 { 
-  printf("\033c");
+  printf("\033c"); //clear stdscr
   initscr();
   noecho();
   cbreak();
@@ -104,13 +102,79 @@ int main(int argc, char* argv[])
 //  printf("Threads created\n"); 
 //  refresh();
   draw_area(ptr+info.xres/2-603/2 + info.xres_virtual*(info.yres/2 -501/2), 603, 501, info.xres_virtual);
+  // init players
+  uint32_t* ptr_car_p1 = ptr + info.xres/2 + info.xres_virtual*info.yres/2;
+  char direct_prev_p1 = RIGHT;
+  draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
   while(work_flag)
   { 
     usleep(62500);
     pthread_mutex_lock(&mutex);
+    switch(direct_p1)
+    {
+      case UP:
+      {
+        if(direct_prev_p1 == DOWN)
+        {
+          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+          ptr_car_p1 += info.xres_virtual;
+          draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual);
+          break;
+        }
+        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+        ptr_car_p1 -= info.xres_virtual;
+        draw_car(ptr_car_p1, UP, RED, info.xres_virtual);
+        direct_prev_p1 = UP;
+        break;
+      }
+      case DOWN:
+      {
+        if(direct_prev_p1 == UP)
+        {
+          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+          ptr_car_p1 -= info.xres_virtual;
+          draw_car(ptr_car_p1, UP, RED, info.xres_virtual);
+          break;
+        }
+        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+        ptr_car_p1 += info.xres_virtual;
+        draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual);
+        direct_prev_p1 = DOWN;
+        break;
+      }
+      case LEFT:
+      {
+        if(direct_prev_p1 == RIGHT)
+        {
+          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+          ptr_car_p1 += 1;
+          draw_car(ptr_car_p1, RIGHT, RED, info.xres_virtual);
+          break;
+        }
+        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+        ptr_car_p1 -= 1;
+        draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual);
+        direct_prev_p1 = LEFT;
+        break;
+      }
+      case RIGHT:
+      {
+        if(direct_prev_p1 == LEFT)
+        {
+          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+          ptr_car_p1 -= 1;
+          draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual);
+          break;
+        }
+        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+        ptr_car_p1 += 1;
+        draw_car(ptr_car_p1, RIGHT, RED, info.xres_virtual);
+        direct_prev_p1 = RIGHT;
+        break;
+      }
+    }
     pthread_mutex_unlock(&mutex);
   }
-  
   if( pthread_join(tid_control, NULL) != 0 || pthread_kill(tid_syncing, 17) != 0 )
   {
     fprintf(stderr, "Error of working thread\n");
@@ -119,6 +183,9 @@ int main(int argc, char* argv[])
   close(sockfd);
   munmap(ptr, map_size);
   close(fb);
+  getchar();
   endwin();
+  printf("\033c\n\t*\t\t\t\t\t\t\t\t\t*\t\t*\n*\t\t\t\t*\t\t\t\t*\n\n\t*\t\t\t\t*\t\t\t\t\t\t*\n");
+  printf("\t\t\t\t\t\t\tGood!\n");
   return 0;
 }

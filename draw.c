@@ -69,7 +69,7 @@ int draw_car(uint32_t* ptr, char direction, uint32_t color, int src_xres)
     return was_overlap;
 }
 
-int delete_car(uint32_t* ptr, char direction, uint32_t src_xres)
+void delete_car(uint32_t* ptr, char direction, int src_xres)
 {
     switch (direction)
     {
@@ -99,8 +99,8 @@ int delete_car(uint32_t* ptr, char direction, uint32_t src_xres)
                 ptr[-2*src_xres+i] = BLACK;
                 ptr[-1*src_xres+i] = BLACK;
                 ptr[i] = BLACK;
-                ptr[1*src_xres+i] = BLACK;
-                ptr[2*src_xres+i] = BLACK
+                ptr[src_xres+i] = BLACK;
+                ptr[2*src_xres+i] = BLACK;
             }
             break;
         case RIGHT:
@@ -109,8 +109,8 @@ int delete_car(uint32_t* ptr, char direction, uint32_t src_xres)
                 ptr[-2*src_xres+i] = BLACK;
                 ptr[-1*src_xres+i] = BLACK;
                 ptr[i] = BLACK;
-                ptr[1*src_xres+i] = BLACK;
-                ptr[2*src_xres+i] = BLACK
+                ptr[src_xres+i] = BLACK;
+                ptr[2*src_xres+i] = BLACK;         
             }
             break;
     }

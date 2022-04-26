@@ -1,8 +1,6 @@
 extern int work_flag;
-extern char direct_prev_p1;
-extern char direct_new_p1;
-extern char direct_prev_p2;
-extern char direct_new_p2;
+extern char direct_p1;
+extern char direct_p2;
 
 struct args_keys
 {
@@ -25,8 +23,7 @@ void control_thread(struct args_keys* args)
     if(direction[0] == UP || direction[0] == DOWN || direction[0] == LEFT || direction[0] == RIGHT)
     {
       pthread_mutex_lock(ptr_mtx);
-      direct_prev_p1 = direct_new_p1;
-      direct_new_p1 = direction[0]; 
+      direct_p1 = direction[0]; 
       sendto(sockfd, direction, 1, 0, (struct sockaddr*)ptr_p2_addr, len_sockaddr);
       //debug
 //      printf("I push: %c, %ld\n", direct_new_p1, ptr_p2_addr->sin_addr.s_addr);    
@@ -48,8 +45,7 @@ int syncing_thread(struct args_keys* args)
   {
     recvfrom(sockfd, &direction, 1, 0, (struct sockaddr*) ptr_p2_addr, &len_sockaddr);
     pthread_mutex_lock(ptr_mtx);
-    direct_prev_p2 = direct_new_p2;
-    direct_new_p2 = direction;
+    direct_p2 = direction;
     //debug
 //    printf("I get: %c\n", direct_new_p2);
     //end debug
