@@ -13,8 +13,8 @@
 */
 
 int work_flag= 1;
-char direct_p1 = RIGHT;
-char direct_p2= LEFT;
+char direct_p1 = DOWN;
+char direct_p2= UP;
 
 void handler(int none)
 {
@@ -103,9 +103,10 @@ int main(int argc, char* argv[])
 //  refresh();
   draw_area(ptr+info.xres/2-603/2 + info.xres_virtual*(info.yres/2 -501/2), 603, 501, info.xres_virtual);
   // init players
-  uint32_t* ptr_car_p1 = ptr + info.xres/2 + info.xres_virtual*info.yres/2;
-  char direct_prev_p1 = RIGHT;
-  char direct_prev_p2 = LEFT;
+  uint32_t* ptr_car_p1 = ptr+info.xres/2-603/2 + 3 + info.xres_virtual*(info.yres/2 -501/2 + 1);
+  uint32_t* ptr_car_p2 = ptr+info.xres/2-603/2 + 603-4 + info.xres_virtual*(info.yres/2 -501/2 + 499);
+  char direct_prev_p1 = DOWN;
+  char direct_prev_p2 = UP;
   draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
   while(work_flag)
   { 
@@ -209,21 +210,21 @@ int main(int argc, char* argv[])
     {
       case UP:
       {
-        if(direct_prev_p1 == DOWN)
+        if(direct_prev_p2 == DOWN)
         {
-          delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
-          *ptr_car_p2 = RED;
+          delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
+          *ptr_car_p2 = BLUE;
           ptr_car_p2 += info.xres_virtual;
-          if(draw_car(ptr_car_p2, DOWN, RED, info.xres_virtual))
+          if(draw_car(ptr_car_p2, DOWN, BLUE, info.xres_virtual))
           {
             work_flag = 0;
           }
           break;
         }
-        delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
-        *ptr_car_p2 = RED;
+        delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
+        *ptr_car_p2 = BLUE;
         ptr_car_p2 -= info.xres_virtual;
-        if(draw_car(ptr_car_p2, UP, RED, info.xres_virtual))
+        if(draw_car(ptr_car_p2, UP, BLUE, info.xres_virtual))
         {
           work_flag= 0;
         }
@@ -234,7 +235,7 @@ int main(int argc, char* argv[])
       {
         if(direct_prev_p2 == UP)
         {
-          delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
+          delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
           *ptr_car_p2 = RED;
           ptr_car_p2 -= info.xres_virtual;
           if(draw_car(ptr_car_p2, UP, RED, info.xres_virtual))
@@ -243,7 +244,7 @@ int main(int argc, char* argv[])
           }
           break;
         }
-        delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
+        delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
         *ptr_car_p2 = RED;
         ptr_car_p2 += info.xres_virtual;
         if(draw_car(ptr_car_p2, DOWN, RED, info.xres_virtual))
@@ -257,7 +258,7 @@ int main(int argc, char* argv[])
       {
         if(direct_prev_p2 == RIGHT)
         {
-          delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
+          delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
           *ptr_car_p2 = RED;
           ptr_car_p2 += 1;
           if(draw_car(ptr_car_p2, RIGHT, RED, info.xres_virtual))
@@ -266,7 +267,7 @@ int main(int argc, char* argv[])
           }
           break;
         }
-        delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
+        delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
         *ptr_car_p2 = RED;
         ptr_car_p2 -= 1;
         if(draw_car(ptr_car_p2, LEFT, RED, info.xres_virtual))
@@ -280,7 +281,7 @@ int main(int argc, char* argv[])
       {
         if(direct_prev_p2 == LEFT)
         {
-          delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
+          delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
           *ptr_car_p2 = RED;
           ptr_car_p2 -= 1;
           if(draw_car(ptr_car_p2, LEFT, RED, info.xres_virtual))
@@ -289,7 +290,7 @@ int main(int argc, char* argv[])
           }
           break;
         }
-        delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
+        delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
         *ptr_car_p2 = RED;
         ptr_car_p2 += 1;
         if(draw_car(ptr_car_p2, RIGHT, RED, info.xres_virtual))
@@ -302,6 +303,7 @@ int main(int argc, char* argv[])
     }
     pthread_mutex_unlock(&mutex);
     usleep(62500);
+    //usleep(5000);
   }
   if( pthread_join(tid_control, NULL) != 0 || pthread_kill(tid_syncing, 17) != 0 )
   {
