@@ -108,7 +108,6 @@ int main(int argc, char* argv[])
   draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
   while(work_flag)
   { 
-    usleep(62500);
     pthread_mutex_lock(&mutex);
     switch(direct_p1)
     {
@@ -117,13 +116,21 @@ int main(int argc, char* argv[])
         if(direct_prev_p1 == DOWN)
         {
           delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+          *ptr_car_p1 = RED;
           ptr_car_p1 += info.xres_virtual;
-          draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual);
+          if(draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual))
+          {
+            work_flag = 0;
+          }
           break;
         }
         delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+        *ptr_car_p1 = RED;
         ptr_car_p1 -= info.xres_virtual;
-        draw_car(ptr_car_p1, UP, RED, info.xres_virtual);
+        if(draw_car(ptr_car_p1, UP, RED, info.xres_virtual))
+        {
+          work_flag= 0;
+        }
         direct_prev_p1 = UP;
         break;
       }
@@ -132,13 +139,21 @@ int main(int argc, char* argv[])
         if(direct_prev_p1 == UP)
         {
           delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+          *ptr_car_p1 = RED;
           ptr_car_p1 -= info.xres_virtual;
-          draw_car(ptr_car_p1, UP, RED, info.xres_virtual);
+          if(draw_car(ptr_car_p1, UP, RED, info.xres_virtual))
+          {
+            work_flag = 0;
+          }
           break;
         }
         delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+        *ptr_car_p1 = RED;
         ptr_car_p1 += info.xres_virtual;
-        draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual);
+        if(draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual))
+        {
+          work_flag = 0;
+        }
         direct_prev_p1 = DOWN;
         break;
       }
@@ -147,13 +162,21 @@ int main(int argc, char* argv[])
         if(direct_prev_p1 == RIGHT)
         {
           delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+          *ptr_car_p1 = RED;
           ptr_car_p1 += 1;
-          draw_car(ptr_car_p1, RIGHT, RED, info.xres_virtual);
+          if(draw_car(ptr_car_p1, RIGHT, RED, info.xres_virtual))
+          {
+            work_flag = 0;
+          }
           break;
         }
         delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+        *ptr_car_p1 = RED;
         ptr_car_p1 -= 1;
-        draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual);
+        if(draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual))
+        {
+          work_flag = 0;
+        }
         direct_prev_p1 = LEFT;
         break;
       }
@@ -162,18 +185,27 @@ int main(int argc, char* argv[])
         if(direct_prev_p1 == LEFT)
         {
           delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+          *ptr_car_p1 = RED;
           ptr_car_p1 -= 1;
-          draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual);
+          if(draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual))
+          {
+            work_flag = 0;
+          }
           break;
         }
         delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+        *ptr_car_p1 = RED;
         ptr_car_p1 += 1;
-        draw_car(ptr_car_p1, RIGHT, RED, info.xres_virtual);
+        if(draw_car(ptr_car_p1, RIGHT, RED, info.xres_virtual))
+        {
+          work_flag = 0;
+        }
         direct_prev_p1 = RIGHT;
         break;
       }
     }
     pthread_mutex_unlock(&mutex);
+    usleep(62500);
   }
   if( pthread_join(tid_control, NULL) != 0 || pthread_kill(tid_syncing, 17) != 0 )
   {
