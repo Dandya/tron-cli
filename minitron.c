@@ -105,6 +105,7 @@ int main(int argc, char* argv[])
   // init players
   uint32_t* ptr_car_p1 = ptr + info.xres/2 + info.xres_virtual*info.yres/2;
   char direct_prev_p1 = RIGHT;
+  char direct_prev_p2 = LEFT;
   draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
   while(work_flag)
   { 
