@@ -109,6 +109,101 @@ int main(int argc, char* argv[])
   while(work_flag)
   { 
     pthread_mutex_lock(&mutex);
+    switch(direct_p2)
+    {
+      case UP:
+      {
+        if(direct_prev_p2 == DOWN)
+        {
+          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+          *ptr_car_p2 = BLUE;
+          ptr_car_p2 += info.xres_virtual;
+          if(draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual))
+          {
+            work_flag = 0;
+          }
+          break;
+        }
+        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+        *ptr_car_p1 = RED;
+        ptr_car_p1 -= info.xres_virtual;
+        if(draw_car(ptr_car_p1, UP, RED, info.xres_virtual))
+        {
+          work_flag= 0;
+        }
+        direct_prev_p1 = UP;
+        break;
+      }
+      case DOWN:
+      {
+        if(direct_prev_p1 == UP)
+        {
+          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+          *ptr_car_p1 = RED;
+          ptr_car_p1 -= info.xres_virtual;
+          if(draw_car(ptr_car_p1, UP, RED, info.xres_virtual))
+          {
+            work_flag = 0;
+          }
+          break;
+        }
+        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+        *ptr_car_p1 = RED;
+        ptr_car_p1 += info.xres_virtual;
+        if(draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual))
+        {
+          work_flag = 0;
+        }
+        direct_prev_p1 = DOWN;
+        break;
+      }
+      case LEFT:
+      {
+        if(direct_prev_p1 == RIGHT)
+        {
+          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+          *ptr_car_p1 = RED;
+          ptr_car_p1 += 1;
+          if(draw_car(ptr_car_p1, RIGHT, RED, info.xres_virtual))
+          {
+            work_flag = 0;
+          }
+          break;
+        }
+        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+        *ptr_car_p1 = RED;
+        ptr_car_p1 -= 1;
+        if(draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual))
+        {
+          work_flag = 0;
+        }
+        direct_prev_p1 = LEFT;
+        break;
+      }
+      case RIGHT:
+      {
+        if(direct_prev_p1 == LEFT)
+        {
+          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+          *ptr_car_p1 = RED;
+          ptr_car_p1 -= 1;
+          if(draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual))
+          {
+            work_flag = 0;
+          }
+          break;
+        }
+        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+        *ptr_car_p1 = RED;
+        ptr_car_p1 += 1;
+        if(draw_car(ptr_car_p1, RIGHT, RED, info.xres_virtual))
+        {
+          work_flag = 0;
+        }
+        direct_prev_p1 = RIGHT;
+        break;
+      }
+    }
     switch(direct_p1)
     {
       case UP:
