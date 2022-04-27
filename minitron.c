@@ -226,12 +226,12 @@ int main(int argc, char* argv[])
         {
           work_flag= 0;
         }
-        direct_prev_p1 = UP;
+        direct_prev_p2 = UP;
         break;
       }
       case DOWN:
       {
-        if(direct_prev_p1 == UP)
+        if(direct_prev_p2 == UP)
         {
           delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
           *ptr_car_p2 = RED;
@@ -249,12 +249,12 @@ int main(int argc, char* argv[])
         {
           work_flag = 0;
         }
-        direct_prev_p1 = DOWN;
+        direct_prev_p2 = DOWN;
         break;
       }
       case LEFT:
       {
-        if(direct_prev_p1 == RIGHT)
+        if(direct_prev_p2 == RIGHT)
         {
           delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
           *ptr_car_p2 = RED;
@@ -272,12 +272,12 @@ int main(int argc, char* argv[])
         {
           work_flag = 0;
         }
-        direct_prev_p1 = LEFT;
+        direct_prev_p2 = LEFT;
         break;
       }
       case RIGHT:
       {
-        if(direct_prev_p1 == LEFT)
+        if(direct_prev_p2 == LEFT)
         {
           delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
           *ptr_car_p2 = RED;
@@ -295,7 +295,7 @@ int main(int argc, char* argv[])
         {
           work_flag = 0;
         }
-        direct_prev_p1 = RIGHT;
+        direct_prev_p2 = RIGHT;
         break;
       }
     }
