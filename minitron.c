@@ -3,6 +3,7 @@
 /*
  * Problems:
  * 1) Как узнать собственный адрес?
+ * 2) Существуют различные оттенки черного ?!
  * TODO: 
  * 1) Проверка на размеры экрана (+2 пикселя для каждой координаты)
  * 2) Сравние IP
@@ -118,7 +119,7 @@ int main(int argc, char* argv[])
         if(direct_prev_p1 == DOWN)
         {
           delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-          *ptr_car_p1 = BLUE;
+          *ptr_car_p1 = RED;
           ptr_car_p1 += info.xres_virtual;
           if(draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual))
           {
@@ -188,8 +189,8 @@ int main(int argc, char* argv[])
         {
           delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
           *ptr_car_p1 = RED;
-          ptr_car_p2 -= 1;
-          if(draw_car(ptr_car_p2, LEFT, RED, info.xres_virtual))
+          ptr_car_p1 -= 1;
+          if(draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual))
           {
             work_flag = 0;
           }
