@@ -186,8 +186,8 @@ int main(int argc, char* argv[])
         {
           delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
           *ptr_car_p1 = RED;
-          ptr_car_p1 -= 1;
-          if(draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual))
+          ptr_car_p2 -= 1;
+          if(draw_car(ptr_car_p2, LEFT, RED, info.xres_virtual))
           {
             work_flag = 0;
           }
@@ -204,25 +204,25 @@ int main(int argc, char* argv[])
         break;
       }
     }
-    switch(direct_p1)
+    switch(direct_p2)
     {
       case UP:
       {
         if(direct_prev_p1 == DOWN)
         {
-          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-          *ptr_car_p1 = RED;
-          ptr_car_p1 += info.xres_virtual;
-          if(draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual))
+          delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
+          *ptr_car_p2 = RED;
+          ptr_car_p2 += info.xres_virtual;
+          if(draw_car(ptr_car_p2, DOWN, RED, info.xres_virtual))
           {
             work_flag = 0;
           }
           break;
         }
-        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-        *ptr_car_p1 = RED;
-        ptr_car_p1 -= info.xres_virtual;
-        if(draw_car(ptr_car_p1, UP, RED, info.xres_virtual))
+        delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
+        *ptr_car_p2 = RED;
+        ptr_car_p2 -= info.xres_virtual;
+        if(draw_car(ptr_car_p2, UP, RED, info.xres_virtual))
         {
           work_flag= 0;
         }
@@ -233,19 +233,19 @@ int main(int argc, char* argv[])
       {
         if(direct_prev_p1 == UP)
         {
-          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-          *ptr_car_p1 = RED;
-          ptr_car_p1 -= info.xres_virtual;
-          if(draw_car(ptr_car_p1, UP, RED, info.xres_virtual))
+          delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
+          *ptr_car_p2 = RED;
+          ptr_car_p2 -= info.xres_virtual;
+          if(draw_car(ptr_car_p2, UP, RED, info.xres_virtual))
           {
             work_flag = 0;
           }
           break;
         }
-        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-        *ptr_car_p1 = RED;
-        ptr_car_p1 += info.xres_virtual;
-        if(draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual))
+        delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
+        *ptr_car_p2 = RED;
+        ptr_car_p2 += info.xres_virtual;
+        if(draw_car(ptr_car_p2, DOWN, RED, info.xres_virtual))
         {
           work_flag = 0;
         }
@@ -256,19 +256,19 @@ int main(int argc, char* argv[])
       {
         if(direct_prev_p1 == RIGHT)
         {
-          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-          *ptr_car_p1 = RED;
-          ptr_car_p1 += 1;
-          if(draw_car(ptr_car_p1, RIGHT, RED, info.xres_virtual))
+          delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
+          *ptr_car_p2 = RED;
+          ptr_car_p2 += 1;
+          if(draw_car(ptr_car_p2, RIGHT, RED, info.xres_virtual))
           {
             work_flag = 0;
           }
           break;
         }
-        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-        *ptr_car_p1 = RED;
-        ptr_car_p1 -= 1;
-        if(draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual))
+        delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
+        *ptr_car_p2 = RED;
+        ptr_car_p2 -= 1;
+        if(draw_car(ptr_car_p2, LEFT, RED, info.xres_virtual))
         {
           work_flag = 0;
         }
@@ -279,19 +279,19 @@ int main(int argc, char* argv[])
       {
         if(direct_prev_p1 == LEFT)
         {
-          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-          *ptr_car_p1 = RED;
-          ptr_car_p1 -= 1;
-          if(draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual))
+          delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
+          *ptr_car_p2 = RED;
+          ptr_car_p2 -= 1;
+          if(draw_car(ptr_car_p2, LEFT, RED, info.xres_virtual))
           {
             work_flag = 0;
           }
           break;
         }
-        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-        *ptr_car_p1 = RED;
-        ptr_car_p1 += 1;
-        if(draw_car(ptr_car_p1, RIGHT, RED, info.xres_virtual))
+        delete_car(ptr_car_p2, direct_prev_p1, info.xres_virtual);
+        *ptr_car_p2 = RED;
+        ptr_car_p2 += 1;
+        if(draw_car(ptr_car_p2, RIGHT, RED, info.xres_virtual))
         {
           work_flag = 0;
         }
