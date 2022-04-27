@@ -109,15 +109,15 @@ int main(int argc, char* argv[])
   while(work_flag)
   { 
     pthread_mutex_lock(&mutex);
-    switch(direct_p2)
+    switch(direct_p1)
     {
       case UP:
       {
-        if(direct_prev_p2 == DOWN)
+        if(direct_prev_p1 == DOWN)
         {
           delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-          *ptr_car_p2 = BLUE;
-          ptr_car_p2 += info.xres_virtual;
+          *ptr_car_p1 = BLUE;
+          ptr_car_p1 += info.xres_virtual;
           if(draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual))
           {
             work_flag = 0;
