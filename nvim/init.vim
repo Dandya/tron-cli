@@ -23,7 +23,15 @@ nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
-
+nnoremap <C-w> :tabnext<CR>
+nnoremap <C-t> :tabnew<CR>
+nnoremap <C-x> :q<CR>
+inoremap <C-x> <Esc>:q<CR>
+nnoremap <C-k> :tabclose<CR>
+inoremap <C-k> <Esc>:tabclose<CR>i
+inoremap <C-w> <Esc>:tabnext<CR>i
+inoremap <C-t> <Esc>:tabnew<CR>i
+nnoremap <C-n> :NERDTree<CR>
 set splitbelow
 set splitright
 
@@ -54,9 +62,9 @@ let g:airline_powerline_fonts = 1
 "let g:airline_theme = 'challenger_deep'
 let g:airline#extensions#tabline#enabled = 1
 
-"if !exists('g:airline_symbols')
-"    let g:airline_symbols = {}
-"endif
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
 
 " unicode symbols
 "let g:airline_left_sep = '»'
@@ -88,7 +96,7 @@ set showtabline=2
 
 "true colours
 "set background=red
-set t_Co=256
+"set t_Co=256
 
 if (has("nvim")|| has('termguicolors'))
     let $NVIM_TUI_ENABLE_TRUE_COLOR=1

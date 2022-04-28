@@ -1,10 +1,9 @@
 extern int work_flag;
-extern char direct_p1;
-extern char direct_p2;
 
 struct args_keys
 {
   int sockfd;
+  char* ptr_direct;
   struct sockaddr_in* ptr_p2_addr;
   pthread_mutex_t* ptr_mtx;
 };
@@ -12,19 +11,19 @@ struct args_keys
 void control_thread(struct args_keys* args)
 {
   int sockfd = args->sockfd;
+  char* ptr_direct = args->ptr_direct;
   pthread_mutex_t* ptr_mtx = args->ptr_mtx;
   struct sockaddr_in* ptr_p2_addr = args->ptr_p2_addr;
   int len_sockaddr = sizeof(*ptr_p2_addr);
-  char direction[4] = {0};
-  while( direction[0] != 'q' && work_flag )
+  char direction;
+  while( direction != 'q' && work_flag )
   {
-    *direction = getchar();
-    mvaddch(1,1,direction[0]);
-    if(direction[0] == UP || direction[0] == DOWN || direction[0] == LEFT || direction[0] == RIGHT)
+    direction = getchar();
+    if(direction == UP || direction == DOWN || direction == LEFT || direction == RIGHT)
     {
       pthread_mutex_lock(ptr_mtx);
-      direct_p1 = direction[0]; 
-      sendto(sockfd, direction, 1, 0, (struct sockaddr*)ptr_p2_addr, len_sockaddr);
+      *ptr_direct = direction; 
+      sendto(sockfd, &direction, 1, 0, (struct sockaddr*)ptr_p2_addr, len_sockaddr);
       //debug
 //      printf("I push: %c, %ld\n", direct_new_p1, ptr_p2_addr->sin_addr.s_addr);    
       //end debub
@@ -37,6 +36,7 @@ void control_thread(struct args_keys* args)
 int syncing_thread(struct args_keys* args)
 {
   int sockfd = args->sockfd;
+  char* ptr_direct = args->ptr_direct;
   pthread_mutex_t* ptr_mtx = args->ptr_mtx;
   struct sockaddr_in* ptr_p2_addr = args->ptr_p2_addr;
   int len_sockaddr = sizeof(*ptr_p2_addr);
@@ -45,7 +45,7 @@ int syncing_thread(struct args_keys* args)
   {
     recvfrom(sockfd, &direction, 1, 0, (struct sockaddr*) ptr_p2_addr, &len_sockaddr);
     pthread_mutex_lock(ptr_mtx);
-    direct_p2 = direction;
+    *ptr_direct = direction;
     //debug
 //    printf("I get: %c\n", direct_new_p2);
     //end debug

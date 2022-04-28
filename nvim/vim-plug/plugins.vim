@@ -15,7 +15,7 @@ call plug#begin('~/.config/nvim/autoload/plugged/')
     Plug 'vim-airline/vim-airline'
     Plug 'vim-syntastic/syntastic'
     Plug 'maxboisvert/vim-simple-complete' 
-    "Plug 'vim-airline/vim-airline-themes'
+    Plug 'vim-airline/vim-airline-themes'
     Plug 'rafi/awesome-vim-colorschemes'
     Plug 'preservim/nerdcommenter'
     Plug 'ervandew/supertab'
@@ -30,12 +30,12 @@ call plug#begin('~/.config/nvim/autoload/plugged/')
     Plug 'glepnir/dashboard-nvim'
     Plug 'hoob3rt/lualine.nvim'
     " If you want to have icons in your statusline choose one of these
-    Plug 'kyazdani42/nvim-web-devicons'
-    Plug 'ryanoasis/vim-devicons'
+    "Plug 'kyazdani42/nvim-web-devicons'
+    "Plug 'ryanoasis/vim-devicons'
     Plug 'dracula/vim', { 'as': 'dracula' }
     "Clap
     Plug 'liuchengxu/vim-clap'
-    Plug 'challenger-deep-theme/vim', {'as': 'challenger-deep'}
+    "Plug 'challenger-deep-theme/vim', {'as': 'challenger-deep'}
     call plug#end()
 lua require('lualine').setup{options = {theme = 'dracula'}}
 
