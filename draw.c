@@ -110,6 +110,7 @@ void delete_car(uint32_t* ptr, char direction, int scr_xres)
     switch (direction)
     {
         case UP:
+        {
             for(int i = 0; i>-8; i--)
             {
                 ptr[-2+i*scr_xres] = BLACK;
@@ -119,7 +120,9 @@ void delete_car(uint32_t* ptr, char direction, int scr_xres)
                 ptr[2+i*scr_xres] = BLACK;
             }
             break;
+        }
         case DOWN:
+        {
             for(int i = 0; i<8; i++)
             {
                 ptr[-2+i*scr_xres] = BLACK;
@@ -129,7 +132,9 @@ void delete_car(uint32_t* ptr, char direction, int scr_xres)
                 ptr[2+i*scr_xres] = BLACK;
             }
             break;
+        }
         case LEFT:
+        {
             for(int i = 0; i>-8; i--)
             {
                 ptr[-2*scr_xres+i] = BLACK;
@@ -139,7 +144,9 @@ void delete_car(uint32_t* ptr, char direction, int scr_xres)
                 ptr[2*scr_xres+i] = BLACK;
             }
             break;
+        }
         case RIGHT:
+        {
             for(int i = 0; i<8; i++)
             {
                 ptr[-2*scr_xres+i] = BLACK;
@@ -149,5 +156,6 @@ void delete_car(uint32_t* ptr, char direction, int scr_xres)
                 ptr[2*scr_xres+i] = BLACK;         
             }
             break;
+        }
     }
 }

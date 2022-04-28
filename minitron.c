@@ -19,104 +19,129 @@ void handler(int none)
   work_flag = 0;
 }
 
-int move_car(int* ptr_car, char* ptr_direct, char* ptr_direct_prev, uint32_t color)
+void move_car(int** ptr_car, char direct, int scr_xres)
 {
-    switch(direct_p1)
-    {
-        case UP:
-        {
-            if(direct_prev_p1 == DOWN)
-            {
-                delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-                *ptr_car_p1 = RED;
-          ptr_car_p1 += info.xres_virtual;
-          if(draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual))
-          {
-            work_flag = 0;
-          }
-          break;
-        }
-        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-        *ptr_car_p1 = RED;
-        ptr_car_p1 -= info.xres_virtual;
-        if(draw_car(ptr_car_p1, UP, RED, info.xres_virtual))
-        {
-          work_flag= 0;
-        }
-        direct_prev_p1 = UP;
+  switch(direct)
+  {
+    case UP:
+      {
+        *ptr_car -= scr_xres;
         break;
       }
       case DOWN:
       {
-        if(direct_prev_p1 == UP)
-        {
-          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-          *ptr_car_p1 = RED;
-          ptr_car_p1 -= info.xres_virtual;
-          if(draw_car(ptr_car_p1, UP, RED, info.xres_virtual))
-          {
-            work_flag = 0;
-          }
-          break;
-        }
-        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-        *ptr_car_p1 = RED;
-        ptr_car_p1 += info.xres_virtual;
-        if(draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual))
-        {
-          work_flag = 0;
-        }
-        direct_prev_p1 = DOWN;
+        *ptr_car += scr_xres;
         break;
       }
       case LEFT:
       {
-        if(direct_prev_p1 == RIGHT)
-        {
-          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-          *ptr_car_p1 = RED;
-          ptr_car_p1 += 1;
-          if(draw_car(ptr_car_p1, RIGHT, RED, info.xres_virtual))
-          {
-            work_flag = 0;
-          }
-          break;
-        }
-        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-        *ptr_car_p1 = RED;
-        ptr_car_p1 -= 1;
-        if(draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual))
-        {
-          work_flag = 0;
-        }
-        direct_prev_p1 = LEFT;
+        *ptr_car -= 1;
         break;
       }
       case RIGHT:
       {
-        if(direct_prev_p1 == LEFT)
-        {
-          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-          *ptr_car_p1 = RED;
-          ptr_car_p1 -= 1;
-          if(draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual))
-          {
-            work_flag = 0;
-          }
-          break;
-        }
-        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-        *ptr_car_p1 = RED;
-        ptr_car_p1 += 1;
-        if(draw_car(ptr_car_p1, RIGHT, RED, info.xres_virtual))
-        {
-          work_flag = 0;
-        }
-        direct_prev_p1 = RIGHT;
+        *ptr_car += 1;
         break;
       }
-    }
+  }
 }
+// {
+//     switch(direct_p1)
+//     {
+//         case UP:
+//         {
+//             if(direct_prev_p1 == DOWN)
+//             {
+//                 delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+//                 *ptr_car_p1 = RED;
+//           ptr_car_p1 += info.xres_virtual;
+//           if(draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual))
+//           {
+//             work_flag = 0;
+//           }
+//           break;
+//         }
+//         delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+//         *ptr_car_p1 = RED;
+//         ptr_car_p1 -= info.xres_virtual;
+//         if(draw_car(ptr_car_p1, UP, RED, info.xres_virtual))
+//         {
+//           work_flag= 0;
+//         }
+//         direct_prev_p1 = UP;
+//         break;
+//       }
+//       case DOWN:
+//       {
+//         if(direct_prev_p1 == UP)
+//         {
+//           delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+//           *ptr_car_p1 = RED;
+//           ptr_car_p1 -= info.xres_virtual;
+//           if(draw_car(ptr_car_p1, UP, RED, info.xres_virtual))
+//           {
+//             work_flag = 0;
+//           }
+//           break;
+//         }
+//         delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+//         *ptr_car_p1 = RED;
+//         ptr_car_p1 += info.xres_virtual;
+//         if(draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual))
+//         {
+//           work_flag = 0;
+//         }
+//         direct_prev_p1 = DOWN;
+//         break;
+//       }
+//       case LEFT:
+//       {
+//         if(direct_prev_p1 == RIGHT)
+//         {
+//           delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+//           *ptr_car_p1 = RED;
+//           ptr_car_p1 += 1;
+//           if(draw_car(ptr_car_p1, RIGHT, RED, info.xres_virtual))
+//           {
+//             work_flag = 0;
+//           }
+//           break;
+//         }
+//         delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+//         *ptr_car_p1 = RED;
+//         ptr_car_p1 -= 1;
+//         if(draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual))
+//         {
+//           work_flag = 0;
+//         }
+//         direct_prev_p1 = LEFT;
+//         break;
+//       }
+//       case RIGHT:
+//       {
+//         if(direct_prev_p1 == LEFT)
+//         {
+//           delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+//           *ptr_car_p1 = RED;
+//           ptr_car_p1 -= 1;
+//           if(draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual))
+//           {
+//             work_flag = 0;
+//           }
+//           break;
+//         }
+//         delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+//         *ptr_car_p1 = RED;
+//         ptr_car_p1 += 1;
+//         if(draw_car(ptr_car_p1, RIGHT, RED, info.xres_virtual))
+//         {
+//           work_flag = 0;
+//         }
+//         direct_prev_p1 = RIGHT;
+//         break;
+//       }
+//     }
+// }
 
 int main(int argc, char* argv[])
 { 
@@ -223,199 +248,196 @@ int main(int argc, char* argv[])
           yres_area, info.xres_virtual);
   draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
   draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual);
+  char opposite_direct;
   while(work_flag)
   { 
     pthread_mutex_lock(&mutex);
+    // move first player's car 
     switch(direct_p1)
     {
       case UP:
       {
-        if(direct_prev_p1 == DOWN)
-        {
-          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-          *ptr_car_p1 = RED;
-          ptr_car_p1 += info.xres_virtual;
-          if(draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual))
-          {
-            work_flag = 0;
-          }
-          break;
-        }
-        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-        *ptr_car_p1 = RED;
-        ptr_car_p1 -= info.xres_virtual;
-        if(draw_car(ptr_car_p1, UP, RED, info.xres_virtual))
-        {
-          work_flag= 0;
-        }
-        direct_prev_p1 = UP;
+        opposite_direct = DOWN;
         break;
       }
       case DOWN:
       {
-        if(direct_prev_p1 == UP)
-        {
-          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-          *ptr_car_p1 = RED;
-          ptr_car_p1 -= info.xres_virtual;
-          if(draw_car(ptr_car_p1, UP, RED, info.xres_virtual))
-          {
-            work_flag = 0;
-          }
-          break;
-        }
-        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-        *ptr_car_p1 = RED;
-        ptr_car_p1 += info.xres_virtual;
-        if(draw_car(ptr_car_p1, DOWN, RED, info.xres_virtual))
-        {
-          work_flag = 0;
-        }
-        direct_prev_p1 = DOWN;
+        opposite_direct = UP;
         break;
       }
       case LEFT:
       {
-        if(direct_prev_p1 == RIGHT)
-        {
-          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-          *ptr_car_p1 = RED;
-          ptr_car_p1 += 1;
-          if(draw_car(ptr_car_p1, RIGHT, RED, info.xres_virtual))
-          {
-            work_flag = 0;
-          }
-          break;
-        }
-        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-        *ptr_car_p1 = RED;
-        ptr_car_p1 -= 1;
-        if(draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual))
-        {
-          work_flag = 0;
-        }
-        direct_prev_p1 = LEFT;
+        opposite_direct = RIGHT;
         break;
       }
       case RIGHT:
       {
-        if(direct_prev_p1 == LEFT)
-        {
-          delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-          *ptr_car_p1 = RED;
-          ptr_car_p1 -= 1;
-          if(draw_car(ptr_car_p1, LEFT, RED, info.xres_virtual))
-          {
-            work_flag = 0;
-          }
-          break;
-        }
-        delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
-        *ptr_car_p1 = RED;
-        ptr_car_p1 += 1;
-        if(draw_car(ptr_car_p1, RIGHT, RED, info.xres_virtual))
-        {
-          work_flag = 0;
-        }
-        direct_prev_p1 = RIGHT;
+        opposite_direct = LEFT;
         break;
       }
     }
+    if(direct_prev_p1 != opposite_direct)
+    {
+      delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+      *ptr_car_p1 = RED;
+      move_car(&ptr_car_p1, direct_p1, info.xres_virtual)
+      if(draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual))
+      {
+        work_flag= 0;
+      }
+      direct_prev_p1 = direct_p1;  
+    }
+    else
+    {
+      delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual);
+      *ptr_car_p1 = RED;
+      move_car(&ptr_car_p1, direct_prev_p1, info.xres_virtual);
+      if(draw_car(ptr_car_p1, direct_prev_p1, RED, info.xres_virtual))
+      {
+        work_flag = 0;
+      }
+    }
+    // move second player's car
     switch(direct_p2)
     {
       case UP:
       {
-        if(direct_prev_p2 == DOWN)
-        {
-          delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
-          *ptr_car_p2 = BLUE;
-          ptr_car_p2 += info.xres_virtual;
-          if(draw_car(ptr_car_p2, DOWN, BLUE, info.xres_virtual))
-          {
-            work_flag = 0;
-          }
-          break;
-        }
-        delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
-        *ptr_car_p2 = BLUE;
-        ptr_car_p2 -= info.xres_virtual;
-        if(draw_car(ptr_car_p2, UP, BLUE, info.xres_virtual))
-        {
-          work_flag= 0;
-        }
-        direct_prev_p2 = UP;
+        opposite_direct = DOWN;
         break;
       }
       case DOWN:
       {
-        if(direct_prev_p2 == UP)
-        {
-          delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
-          *ptr_car_p2 = RED;
-          ptr_car_p2 -= info.xres_virtual;
-          if(draw_car(ptr_car_p2, UP, RED, info.xres_virtual))
-          {
-            work_flag = 0;
-          }
-          break;
-        }
-        delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
-        *ptr_car_p2 = RED;
-        ptr_car_p2 += info.xres_virtual;
-        if(draw_car(ptr_car_p2, DOWN, RED, info.xres_virtual))
-        {
-          work_flag = 0;
-        }
-        direct_prev_p2 = DOWN;
+        opposite_direct = UP;
         break;
       }
       case LEFT:
       {
-        if(direct_prev_p2 == RIGHT)
-        {
-          delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
-          *ptr_car_p2 = RED;
-          ptr_car_p2 += 1;
-          if(draw_car(ptr_car_p2, RIGHT, RED, info.xres_virtual))
-          {
-            work_flag = 0;
-          }
-          break;
-        }
-        delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
-        *ptr_car_p2 = RED;
-        ptr_car_p2 -= 1;
-        if(draw_car(ptr_car_p2, LEFT, RED, info.xres_virtual))
-        {
-          work_flag = 0;
-        }
-        direct_prev_p2 = LEFT;
+        opposite_direct = RIGHT;
         break;
       }
       case RIGHT:
       {
-        if(direct_prev_p2 == LEFT)
-        {
-          delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
-          *ptr_car_p2 = RED;
-          ptr_car_p2 -= 1;
-          if(draw_car(ptr_car_p2, LEFT, RED, info.xres_virtual))
-          {
-            work_flag = 0;
-          }
-          break;
-        }
-        delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
-        *ptr_car_p2 = RED;
-        ptr_car_p2 += 1;
-        if(draw_car(ptr_car_p2, RIGHT, RED, info.xres_virtual))
-        {
-          work_flag = 0;
-        }
-        direct_prev_p2 = RIGHT;
+        opposite_direct = LEFT;
         break;
       }
     }
+    if(direct_prev_p2 != opposite_direct)
+    {
+      delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
+      *ptr_car_p2 = BLUE;
+      move_car(&ptr_car_p2, direct_p2, info.xres_virtual)
+      if(draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual))
+      {
+        work_flag= 0;
+      }
+      direct_prev_p2 = direct_p2;
+    }
+    else
+    {
+      delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
+      *ptr_car_p2 = BLUE;
+      move_car(&ptr_car_p2, direct_prev_p2, info.xres_virtual);
+      if(draw_car(ptr_car_p2, direct_prev_p2, BLUE, info.xres_virtual))
+      {
+        work_flag = 0;
+      }
+    }
+    
+    // switch(direct_p2)
+    // {
+    //   case UP:
+    //   {
+    //     if(direct_prev_p2 == DOWN)
+    //     {
+    //       delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
+    //       *ptr_car_p2 = BLUE;
+    //       ptr_car_p2 += info.xres_virtual;
+    //       if(draw_car(ptr_car_p2, DOWN, BLUE, info.xres_virtual))
+    //       {
+    //         work_flag = 0;
+    //       }
+    //       break;
+    //     }
+    //     delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
+    //     *ptr_car_p2 = BLUE;
+    //     ptr_car_p2 -= info.xres_virtual;
+    //     if(draw_car(ptr_car_p2, UP, BLUE, info.xres_virtual))
+    //     {
+    //       work_flag= 0;
+    //     }
+    //     direct_prev_p2 = UP;
+    //     break;
+    //   }
+    //   case DOWN:
+    //   {
+    //     if(direct_prev_p2 == UP)
+    //     {
+    //       delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
+    //       *ptr_car_p2 = RED;
+    //       ptr_car_p2 -= info.xres_virtual;
+    //       if(draw_car(ptr_car_p2, UP, RED, info.xres_virtual))
+    //       {
+    //         work_flag = 0;
+    //       }
+    //       break;
+    //     }
+    //     delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
+    //     *ptr_car_p2 = RED;
+    //     ptr_car_p2 += info.xres_virtual;
+    //     if(draw_car(ptr_car_p2, DOWN, RED, info.xres_virtual))
+    //     {
+    //       work_flag = 0;
+    //     }
+    //     direct_prev_p2 = DOWN;
+    //     break;
+    //   }
+    //   case LEFT:
+    //   {
+    //     if(direct_prev_p2 == RIGHT)
+    //     {
+    //       delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
+    //       *ptr_car_p2 = RED;
+    //       ptr_car_p2 += 1;
+    //       if(draw_car(ptr_car_p2, RIGHT, RED, info.xres_virtual))
+    //       {
+    //         work_flag = 0;
+    //       }
+    //       break;
+    //     }
+    //     delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
+    //     *ptr_car_p2 = RED;
+    //     ptr_car_p2 -= 1;
+    //     if(draw_car(ptr_car_p2, LEFT, RED, info.xres_virtual))
+    //     {
+    //       work_flag = 0;
+    //     }
+    //     direct_prev_p2 = LEFT;
+    //     break;
+    //   }
+    //   case RIGHT:
+    //   {
+    //     if(direct_prev_p2 == LEFT)
+    //     {
+    //       delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
+    //       *ptr_car_p2 = RED;
+    //       ptr_car_p2 -= 1;
+    //       if(draw_car(ptr_car_p2, LEFT, RED, info.xres_virtual))
+    //       {
+    //         work_flag = 0;
+    //       }
+    //       break;
+    //     }
+    //     delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual);
+    //     *ptr_car_p2 = RED;
+    //     ptr_car_p2 += 1;
+    //     if(draw_car(ptr_car_p2, RIGHT, RED, info.xres_virtual))
+    //     {
+    //       work_flag = 0;
+    //     }
+    //     direct_prev_p2 = RIGHT;
+    //     break;
+    //   }
+    // }
     pthread_mutex_unlock(&mutex);
     usleep(62500);
     //usleep(5000);
