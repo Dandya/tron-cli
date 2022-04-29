@@ -1,14 +1,8 @@
 #include "functions.h"
 
 /*
- * Problems:
- * 1) Как узнать собственный адрес?
- * TODO: 
- * 1) Проверка на размеры экрана (+2 пикселя для каждой координаты) +
- * 2) Сравние IP
- * 3) Ввод размеров поля +
- * Notes:
- * 1) info.xres, info.yres - размер видимого экрана; 
+ * Note:
+ * info.xres, info.yres - размер видимого экрана; 
  *              info.xres_virtual, info.yres_virtual - размер всего экрана 
 */
 
@@ -48,13 +42,19 @@ void move_car(uint32_t** ptr_car, char direct, int scr_xres)
 
 int main(int argc, char* argv[])
 { 
+
+  if(argc < 4)
+  {
+      printf("Use: ./minitron.exe <xres> <yres> <opponent's ip>\n");
+      return -1;
+  }
+
   //init screen
   printf("\033c"); //clear stdout
   initscr();
   noecho();
   cbreak();
   curs_set(0);
- // keypad(stdscr, TRUE);
   int fb, xstep, ystep;
   struct fb_var_screeninfo info;
   size_t fb_size, map_size, page_size;
@@ -161,13 +161,13 @@ int main(int argc, char* argv[])
   }
 
   // init players
-  uint32_t* ptr_car_p1 = ptr + info.xres/2 - xres_area/2 + 3 + info.xres_virtual*(info.yres/2 - yres_area/2 + 1);
-  uint32_t* ptr_car_p2 = ptr + info.xres/2 - xres_area/2 + xres_area-2 + 
-      info.xres_virtual*(info.yres/2 -yres_area/2 + yres_area);
-  char direct_p1 = DOWN;
-  char direct_p2= UP;
-  char direct_prev_p1 = DOWN;
-  char direct_prev_p2 = UP;
+  uint32_t* ptr_car_p1 = ptr + info.xres/2 - xres_area/2 + 1 + info.xres_virtual*(info.yres/2 - yres_area/2 + 3);
+  uint32_t* ptr_car_p2 = ptr + info.xres/2 - xres_area/2 + xres_area + 
+      info.xres_virtual*(info.yres/2 -yres_area/2 + yres_area-2);
+  char direct_p1 = RIGHT;
+  char direct_p2= LEFT;
+  char direct_prev_p1 = RIGHT;
+  char direct_prev_p2 = LEFT;
   char who_lose[] = {0,0};  //who_lose[0] - first player 
   char index_player = 0;    //who_lose[1] - second player
   
