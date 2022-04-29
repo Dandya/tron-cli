@@ -8,6 +8,41 @@ struct args_keys
   pthread_mutex_t* ptr_mtx;
 };
 
+int get_local_ip(unsigned long addr_c)
+{
+    struct ifaddrs *ifaddr;
+    int family;
+    unsigned long addr_s;
+    int mask;
+    if (getifaddrs(&ifaddr) == -1) 
+    {
+        perror("getifaddrs");
+        return 0;
+    }
+
+    for (struct ifaddrs *ifa = ifaddr; ifa != NULL;
+                ifa = ifa->ifa_next) 
+    {
+        if (ifa->ifa_addr == NULL)
+            continue;
+
+        family = ifa->ifa_addr->sa_family;
+        if (family == AF_INET || family == AF_INET6) 
+        {
+            addr_s = ((struct sockaddr_in *)ifa->ifa_addr)->sin_addr.s_addr;
+            if(addr_s != 0)
+            {
+                mask = ((struct sockaddr_in *)ifa->ifa_netmask)->sin_addr.s_addr; 
+                if((addr_s&mask) == (addr_c&mask))
+                {
+                    return addr_s;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 void control_thread(struct args_keys* args)
 {
   int sockfd = args->sockfd;

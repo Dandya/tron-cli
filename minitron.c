@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
 
   //init socket
   int sockfd;
-  struct sockaddr_in opponent_addr, server_addr;
+  struct sockaddr_in opponent_addr, player_addr;
   
   if((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
   {
@@ -118,11 +118,22 @@ int main(int argc, char* argv[])
   opponent_addr.sin_port = htons(12345);
   opponent_addr.sin_addr.s_addr = inet_addr(argv[3]);
  
-  server_addr.sin_family = AF_INET;
-  server_addr.sin_port = htons(12345);
-  server_addr.sin_addr.s_addr = INADDR_ANY;
+  player_addr.sin_family = AF_INET;
+  player_addr.sin_port = htons(12345);
+  player_addr.sin_addr.s_addr = get_local_ip(opponent_addr.sin_addr.s_addr);
 
-  if(bind(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
+  if(player_addr.sin_addr.s_addr == 0 || 
+    player_addr.sin_addr.s_addr == opponent_addr.sin_addr.s_addr)
+  {
+    close(sockfd);
+    munmap(ptr, map_size);
+    close(fb);
+    endwin();
+    perror("Incorrect opponent's ip");
+    return __LINE__;
+  }
+
+  if(bind(sockfd, (struct sockaddr*)&player_addr, sizeof(player_addr)) < 0)
   {
     close(sockfd);
     munmap(ptr, map_size);
@@ -132,6 +143,8 @@ int main(int argc, char* argv[])
     return __LINE__;
   }
   
+
+
   //init threads
   pthread_t tid_control, tid_syncing;
   pthread_attr_t attr;
@@ -155,10 +168,19 @@ int main(int argc, char* argv[])
   char direct_p2= UP;
   char direct_prev_p1 = DOWN;
   char direct_prev_p2 = UP;
-
+  char who_lose[] = {0,0};  //who_lose[0] - first player 
+  char index_player = 0;    //who_lose[1] - second player
+  
   struct args_keys args1 = {sockfd, &direct_p1 ,&opponent_addr, &mutex};
   struct args_keys args2 = {sockfd, &direct_p2 ,&opponent_addr, &mutex};  
   
+  if(player_addr.sin_addr.s_addr < opponent_addr.sin_addr.s_addr)
+  {
+      args1.ptr_direct = &direct_p2;
+      args2.ptr_direct = &direct_p1;
+      index_player = 1;
+  }
+
   if( pthread_create(&tid_control, &attr,(void *)control_thread, &args1) != 0 )
   {
     close(sockfd);
@@ -220,6 +242,7 @@ int main(int argc, char* argv[])
       if(draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual))
       {
         work_flag= 0;
+        who_lose[0] = 1;
       }
       direct_prev_p1 = direct_p1;  
     }
@@ -231,6 +254,7 @@ int main(int argc, char* argv[])
       if(draw_car(ptr_car_p1, direct_prev_p1, RED, info.xres_virtual))
       {
         work_flag = 0;
+        who_lose[0] = 1;
       }
     }
     // move second player's car
@@ -265,6 +289,7 @@ int main(int argc, char* argv[])
       if(draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual))
       {
         work_flag= 0;
+        who_lose[1] = 1;
       }
       direct_prev_p2 = direct_p2;
     }
@@ -276,11 +301,14 @@ int main(int argc, char* argv[])
       if(draw_car(ptr_car_p2, direct_prev_p2, BLUE, info.xres_virtual))
       {
         work_flag = 0;
+        who_lose[1] = 1;
       }
     }
     pthread_mutex_unlock(&mutex);
     usleep(62500);
   }
+
+  //close all
   if( pthread_join(tid_control, NULL) != 0 || pthread_kill(tid_syncing, 17) != 0 )
   {
     close(sockfd);
@@ -294,7 +322,12 @@ int main(int argc, char* argv[])
   munmap(ptr, map_size);
   close(fb);
   endwin();
+
+  //print result of game
   printf("\033c\n\t*\t\t\t\t\t\t\t\t\t*\t\t*\n*\t\t\t\t*\t\t\t\t*\n\n\t*\t\t\t\t*\t\t\t\t\t\t*\n");
-  printf("\t\t\t\t\t\t\tGood!\n");
+  if(who_lose[index_player] == 0 && who_lose[0] != who_lose[1])
+    printf("\t\t\t\t\t\t\tYou win!\n");
+  else
+    printf("\t\t\t\t\t\t\tYou lose:(\n");
   return 0;
 }

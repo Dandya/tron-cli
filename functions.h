@@ -8,11 +8,15 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <ncurses.h>
+#include <pthread.h>
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#include <ncurses.h>
-#include <pthread.h>
+
+#include <netdb.h>
+#include <ifaddrs.h>
+#include <linux/if_link.h>
 
 #define UP 'w'
 #define DOWN 's'
