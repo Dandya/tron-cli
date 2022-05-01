@@ -201,8 +201,8 @@ int main(int argc, char* argv[])
     return 2;
   }
   
-  uint32_t black_color = ptr_car_p2[0];
   // start game
+  uint32_t black_color = ptr_car_p2[0];
   draw_area(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
           yres_area, info.xres_virtual);
   draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
