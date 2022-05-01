@@ -23,7 +23,6 @@
 #define LEFT 'a'
 #define RIGHT 'd'
 
-#define BLACK 0
 #define RED 0x00FF0000
 #define BLUE 0x000000FF
 #define WHITE 0x00FFFFFF
