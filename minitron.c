@@ -1,6 +1,8 @@
 #include "functions.h"
 
 /*
+ * TODO:
+ * 1) Изменить название black на background_color
  * Note:
  * info.xres, info.yres - размер видимого экрана; 
  *              info.xres_virtual, info.yres_virtual - размер всего экрана 
