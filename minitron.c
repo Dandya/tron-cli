@@ -3,6 +3,7 @@
 /*
  * TODO:
  * 1) Изменить название black на background_color
+ * 2) Сделать нормальное сравнение IP адресов
  * Note:
  * info.xres, info.yres - размер видимого экрана; 
  *              info.xres_virtual, info.yres_virtual - размер всего экрана 
