@@ -202,7 +202,7 @@ int main(int argc, char* argv[])
   }
   
   // start game
-  uint32_t black_color = ptr_car_p2[0];
+  uint32_t background_color = ptr_car_p2[0];
   draw_area(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
           yres_area, info.xres_virtual);
   draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
@@ -237,7 +237,7 @@ int main(int argc, char* argv[])
     }
     if(direct_prev_p1 != opposite_direct)
     {
-      delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual, black_color);
+      delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual, background_color);
       *ptr_car_p1 = RED;
       move_car(&ptr_car_p1, direct_p1, info.xres_virtual);
       if(draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual))
@@ -249,7 +249,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-      delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual, black_color);
+      delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual, background_color);
       *ptr_car_p1 = RED;
       move_car(&ptr_car_p1, direct_prev_p1, info.xres_virtual);
       if(draw_car(ptr_car_p1, direct_prev_p1, RED, info.xres_virtual))
@@ -284,7 +284,7 @@ int main(int argc, char* argv[])
     }
     if(direct_prev_p2 != opposite_direct)
     {
-      delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual, black_color);
+      delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual, background_color);
       *ptr_car_p2 = BLUE;
       move_car(&ptr_car_p2, direct_p2, info.xres_virtual);
       if(draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual))
@@ -296,7 +296,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-      delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual, black_color);
+      delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual, background_color);
       *ptr_car_p2 = BLUE;
       move_car(&ptr_car_p2, direct_prev_p2, info.xres_virtual);
       if(draw_car(ptr_car_p2, direct_prev_p2, BLUE, info.xres_virtual))
