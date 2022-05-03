@@ -136,6 +136,10 @@ int main(int argc, char* argv[])
     return __LINE__;
   }
 
+  char opponent_addr_int[4];
+  char player_addr_int[4];
+  
+
   if(bind(sockfd, (struct sockaddr*)&player_addr, sizeof(player_addr)) < 0)
   {
     close(sockfd);
