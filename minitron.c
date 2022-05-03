@@ -43,7 +43,16 @@ void move_car(uint32_t** ptr_car, char direct, int scr_xres)
   }
 }
 
-
+void invert_four_bytes(char *ptr)
+{
+    char tmp=ptr[0];
+    ptr[0]=ptr[3];
+    ptr[3]=tmp;
+    
+    tmp=ptr[1];
+    ptr[1]=ptr[2];
+    ptr[2]=tmp;
+}
 
 int main(int argc, char* argv[])
 { 
