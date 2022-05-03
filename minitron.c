@@ -43,6 +43,8 @@ void move_car(uint32_t** ptr_car, char direct, int scr_xres)
   }
 }
 
+
+
 int main(int argc, char* argv[])
 { 
 
