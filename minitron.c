@@ -162,11 +162,11 @@ int main(int argc, char* argv[])
   char opponent_addr_int[4];
   char player_addr_int[4];
   
-  *opponent_addr_int = opponent_addr.sin_addr.s_addr;
-  *player_addr_int = player_addr.sin_addr.s_addr;
+  *opponent_ip = opponent_addr.sin_addr.s_addr;
+  *player_ip = player_addr.sin_addr.s_addr;
   
-  
-
+  invert_four_bytes(opponent_ip);
+  invert_four_bytes(player_ip);
 
   //init threads
   pthread_t tid_control, tid_syncing;
@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
   struct args_keys args1 = {sockfd, &direct_p1 ,&opponent_addr, &mutex};
   struct args_keys args2 = {sockfd, &direct_p2 ,&opponent_addr, &mutex};  
   
-  if(player_addr.sin_addr.s_addr < opponent_addr.sin_addr.s_addr)
+  if(*((int*)player_ip) < *((int*)opponent_ip))
   {
       args1.ptr_direct = &direct_p2;
       args2.ptr_direct = &direct_p1;
