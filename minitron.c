@@ -136,9 +136,6 @@ int main(int argc, char* argv[])
     return __LINE__;
   }
 
-  char opponent_addr_int[4];
-  char player_addr_int[4];
-  
 
   if(bind(sockfd, (struct sockaddr*)&player_addr, sizeof(player_addr)) < 0)
   {
@@ -149,6 +146,14 @@ int main(int argc, char* argv[])
     perror("Bind error");
     return __LINE__;
   }
+  
+  //invert bytes for compliance ips
+  char opponent_addr_int[4];
+  char player_addr_int[4];
+  
+  *opponent_addr_int = opponent_addr.sin_addr.s_addr;
+  *player_addr_int = player_addr.sin_addr.s_addr;
+  
   
 
 
