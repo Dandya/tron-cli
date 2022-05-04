@@ -144,6 +144,7 @@ int main(int argc, char* argv[])
     close(fb);
     endwin();
     perror("Incorrect opponent's ip");
+    printf("Your ip:%s", inet_ntoa(player_addr.sin_addr));
     return __LINE__;
   }
 
@@ -159,11 +160,11 @@ int main(int argc, char* argv[])
   }
   
   //invert bytes for compliance ips
-  char opponent_addr_int[4];
-  char player_addr_int[4];
+  char opponent_ip[sizeof(unsigned long)];
+  char player_ip[sizeof(unsigned long)];
   
-  *opponent_ip = opponent_addr.sin_addr.s_addr;
-  *player_ip = player_addr.sin_addr.s_addr;
+  *((unsigned long*)opponent_ip) = opponent_addr.sin_addr.s_addr;
+  *((unsigned long*)player_ip) = player_addr.sin_addr.s_addr;
   
   invert_four_bytes(opponent_ip);
   invert_four_bytes(player_ip);
