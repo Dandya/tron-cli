@@ -234,11 +234,11 @@ int main(int argc, char* argv[])
   struct timeb tb; 
   //time_t start_sec, end_sec;
   unsigned short start_millisec, end_millisec;
+  ftime(&tb);
+  //start_sec = tb.time;
+  start_millisec = tb.millitm;
   while(work_flag)
   { 
-    ftime(&tb);
-    //start_sec = tb.time;
-    start_millisec = tb.millitm;
     pthread_mutex_lock(&mutex);
     // move first player's car 
     switch(direct_p1)
@@ -339,6 +339,10 @@ int main(int argc, char* argv[])
     //end_sec = tb.time;
     end_millisec = tb.millitm;
     usleep(62500 - (end_millisec - start_millisec)*1000);
+    ftime(&tb);
+    //start_sec = tb.time;
+    start_millisec = tb.millitm;
+  
   }
 
   //close all
