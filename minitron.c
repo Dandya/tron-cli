@@ -337,12 +337,12 @@ int main(int argc, char* argv[])
     pthread_mutex_unlock(&mutex);
     ftime(&tb);
     //end_sec = tb.time;
-    end_millisec = tb.millitm;
-    usleep(62500 - (end_millisec - start_millisec)*1000);
+    usleep(62500 - ( 
+                (tb.millitm >= start_millisec) ? tb.millitm - start_millisec : 1000 - start_millisec + tb.millitm
+                )*1000);
     ftime(&tb);
     //start_sec = tb.time;
     start_millisec = tb.millitm;
-  
   }
 
   //close all
