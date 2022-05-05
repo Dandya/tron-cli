@@ -3,7 +3,6 @@
 /*
  * TODO:
  * 1) Изменить название black на background_color
- * 2) Сделать нормальное сравнение IP адресов
  * Note:
  * info.xres, info.yres - размер видимого экрана; 
  *              info.xres_virtual, info.yres_virtual - размер всего экрана 
@@ -232,8 +231,14 @@ int main(int argc, char* argv[])
   draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
   draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual);
   char opposite_direct;
+  struct timeb tb; 
+  //time_t start_sec, end_sec;
+  unsigned short start_millisec, end_millisec;
   while(work_flag)
   { 
+    ftime(&tb);
+    //start_sec = tb.time;
+    start_millisec = tb.millitm;
     pthread_mutex_lock(&mutex);
     // move first player's car 
     switch(direct_p1)
@@ -330,7 +335,10 @@ int main(int argc, char* argv[])
       }
     }
     pthread_mutex_unlock(&mutex);
-    usleep(62500);
+    ftime(&tb);
+    //end_sec = tb.time;
+    end_millisec = tb.millitm;
+    usleep(62500 - (end_millisec - start_millisec)*1000);
   }
 
   //close all

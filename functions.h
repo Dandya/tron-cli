@@ -18,6 +18,8 @@
 #include <ifaddrs.h>
 #include <linux/if_link.h>
 
+#include <sys/timeb.h>
+
 #define UP 'w'
 #define DOWN 's'
 #define LEFT 'a'
