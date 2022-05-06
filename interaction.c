@@ -76,9 +76,6 @@ int syncing_thread(struct args_keys* args)
     recvfrom(sockfd, &direction, 1, 0, (struct sockaddr*) ptr_p2_addr, &len_sockaddr);
     pthread_mutex_lock(ptr_mtx);
     *ptr_direct = direction;
-    //debug
-//    printf("I get: %c\n", direct_new_p2);
-    //end debug
     pthread_mutex_unlock(ptr_mtx);
   }
 }
