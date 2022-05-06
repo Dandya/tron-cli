@@ -343,19 +343,19 @@ int main(int argc, char* argv[])
     #ifdef DEBUG
     fprintf(log, "time: %ld\n", tb.millitm - start_millisec);
     #endif
-    usleep(62500 - ( 
+    usleep(62000 - ( 
                 (tb.millitm >= start_millisec) ? tb.millitm - start_millisec : 1000 - start_millisec + tb.millitm
                 )*1000);
     // usleep(62500);
     ftime(&tb);
     start_millisec = tb.millitm;
   }
-  #ifdef DEBUG
-  fclose(log);
-  #endif
   //close all
   if( pthread_join(tid_control, NULL) != 0 || pthread_kill(tid_syncing, 17) != 0 )
   {
+    #ifdef DEBUG
+    fclose(log);
+    #endif
     close(sockfd);
     munmap(ptr, map_size);
     close(fb);
@@ -363,6 +363,9 @@ int main(int argc, char* argv[])
     fprintf(stderr, "Error of working thread\n");
   }
 
+  #ifdef DEBUG
+  fclose(log);
+  #endif
   close(sockfd);
   munmap(ptr, map_size);
   close(fb);

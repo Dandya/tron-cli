@@ -1,7 +1,7 @@
-all: zmeyka.exe minitron.exe
+all: minitron.exe
 
 %.exe:%.c
-	@gcc $< -lncurses -lpthread -o $@
+	@gcc $< -lncurses -lpthread -O2 -o $@
 
 run: minitron.exe
 	@./minitron.exe
