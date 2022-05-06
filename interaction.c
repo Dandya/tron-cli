@@ -57,9 +57,6 @@ void control_thread(struct args_keys* args)
       pthread_mutex_lock(ptr_mtx);
       *ptr_direct = direction; 
       sendto(sockfd, &direction, 1, 0, (struct sockaddr*)ptr_p2_addr, len_sockaddr);
-      //debug
-//      printf("I push: %c, %ld\n", direct_new_p1, ptr_p2_addr->sin_addr.s_addr);    
-      //end debub
       pthread_mutex_unlock(ptr_mtx);
     }
   }
