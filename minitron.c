@@ -55,6 +55,10 @@ void invert_four_bytes(char *ptr)
 
 int main(int argc, char* argv[])
 { 
+  struct timeb tb; 
+  unsigned short start_millisec, end_millisec;
+  ftime(&tb);
+  start_millisec = tb.millitm;
 
   if(argc < 4)
   {
@@ -231,12 +235,13 @@ int main(int argc, char* argv[])
   draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
   draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual);
   char opposite_direct;
-  struct timeb tb; 
-  //time_t start_sec, end_sec;
-  unsigned short start_millisec, end_millisec;
-  ftime(&tb);
-  //start_sec = tb.time;
-  start_millisec = tb.millitm;
+
+  //struct timespec tm;
+  //clock_gettime(CLOCK_REALTIME, &tm);
+  //long nsec = tm.tv_nsec;
+  #ifdef DEBUG
+  FILE* log = fopen("log", "w");
+  #endif
   while(work_flag)
   { 
     pthread_mutex_lock(&mutex);
@@ -336,15 +341,21 @@ int main(int argc, char* argv[])
     }
     pthread_mutex_unlock(&mutex);
     ftime(&tb);
-    //end_sec = tb.time;
+    #ifdef DEBUG
+    fprintf(log, "time: %ld\n", tb.millitm - start_millisec);
+    #endif
     usleep(62500 - ( 
                 (tb.millitm >= start_millisec) ? tb.millitm - start_millisec : 1000 - start_millisec + tb.millitm
                 )*1000);
+   // usleep(62500);
     ftime(&tb);
     //start_sec = tb.time;
     start_millisec = tb.millitm;
+    //nsec = tm.tv_nsec;
   }
-
+  #ifdef DEBUG
+  fclose(log);
+  #endif
   //close all
   if( pthread_join(tid_control, NULL) != 0 || pthread_kill(tid_syncing, 17) != 0 )
   {
