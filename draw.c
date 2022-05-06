@@ -73,7 +73,7 @@ int draw_car(uint32_t* ptr, char direction, uint32_t color, int scr_xres)
     return was_overlap;
 }
 
-void delete_car(uint32_t* ptr, char direction, int scr_xres, uint32_t black)
+void delete_car(uint32_t* ptr, char direction, int scr_xres, uint32_t background_color)
 {
     switch (direction)
     {
@@ -81,11 +81,11 @@ void delete_car(uint32_t* ptr, char direction, int scr_xres, uint32_t black)
         {
             for(int i = 0; i>-8; i--)
             {
-                ptr[-2+i*scr_xres] = black;
-                ptr[-1+i*scr_xres] = black;
-                ptr[i*scr_xres] = black;
-                ptr[1+i*scr_xres] = black;
-                ptr[2+i*scr_xres] = black;
+                ptr[-2+i*scr_xres] = background_color;
+                ptr[-1+i*scr_xres] = background_color;
+                ptr[i*scr_xres] = background_color;
+                ptr[1+i*scr_xres] = background_color;
+                ptr[2+i*scr_xres] = background_color;
             }
             break;
         }
@@ -93,11 +93,11 @@ void delete_car(uint32_t* ptr, char direction, int scr_xres, uint32_t black)
         {
             for(int i = 0; i<8; i++)
             {
-                ptr[-2+i*scr_xres] = black;
-                ptr[-1+i*scr_xres] = black;
-                ptr[i*scr_xres] = black;
-                ptr[1+i*scr_xres] = black;
-                ptr[2+i*scr_xres] = black;
+                ptr[-2+i*scr_xres] = background_color;
+                ptr[-1+i*scr_xres] = background_color;
+                ptr[i*scr_xres] = background_color;
+                ptr[1+i*scr_xres] = background_color;
+                ptr[2+i*scr_xres] = background_color;
             }
             break;
         }
@@ -105,11 +105,11 @@ void delete_car(uint32_t* ptr, char direction, int scr_xres, uint32_t black)
         {
             for(int i = 0; i>-8; i--)
             {
-                ptr[-2*scr_xres+i] = black;
-                ptr[-1*scr_xres+i] = black;
-                ptr[i] = black;
-                ptr[scr_xres+i] = black;
-                ptr[2*scr_xres+i] = black;
+                ptr[-2*scr_xres+i] = background_color;
+                ptr[-1*scr_xres+i] = background_color;
+                ptr[i] = background_color;
+                ptr[scr_xres+i] = background_color;
+                ptr[2*scr_xres+i] = background_color;
             }
             break;
         }
@@ -117,11 +117,11 @@ void delete_car(uint32_t* ptr, char direction, int scr_xres, uint32_t black)
         {
             for(int i = 0; i<8; i++)
             {
-                ptr[-2*scr_xres+i] = black;
-                ptr[-1*scr_xres+i] = black;
-                ptr[i] = black;
-                ptr[scr_xres+i] = black;
-                ptr[2*scr_xres+i] = black;         
+                ptr[-2*scr_xres+i] = background_color;
+                ptr[-1*scr_xres+i] = background_color;
+                ptr[i] = background_color;
+                ptr[scr_xres+i] = background_color;
+                ptr[2*scr_xres+i] = background_color;         
             }
             break;
         }
