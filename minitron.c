@@ -55,6 +55,7 @@ void invert_four_bytes(char *ptr)
 
 int main(int argc, char* argv[])
 { 
+  // time of one move car
   struct timeb tb; 
   unsigned short start_millisec, end_millisec;
   ftime(&tb);
@@ -237,9 +238,6 @@ int main(int argc, char* argv[])
   draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual);
   char opposite_direct;
 
-  //struct timespec tm;
-  //clock_gettime(CLOCK_REALTIME, &tm);
-  //long nsec = tm.tv_nsec;
   #ifdef DEBUG
   FILE* log = fopen("log", "w");
   #endif
@@ -348,11 +346,9 @@ int main(int argc, char* argv[])
     usleep(62500 - ( 
                 (tb.millitm >= start_millisec) ? tb.millitm - start_millisec : 1000 - start_millisec + tb.millitm
                 )*1000);
-   // usleep(62500);
+    // usleep(62500);
     ftime(&tb);
-    //start_sec = tb.time;
     start_millisec = tb.millitm;
-    //nsec = tm.tv_nsec;
   }
   #ifdef DEBUG
   fclose(log);
