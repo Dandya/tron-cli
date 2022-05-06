@@ -11,7 +11,6 @@ struct args_keys
 int get_local_ip(unsigned long addr_c)
 {
     struct ifaddrs *ifaddr;
-    int family;
     unsigned long addr_s;
     int mask;
     if (getifaddrs(&ifaddr) == -1) 
@@ -26,8 +25,7 @@ int get_local_ip(unsigned long addr_c)
         if (ifa->ifa_addr == NULL)
             continue;
 
-        family = ifa->ifa_addr->sa_family;
-        if (family == AF_INET || family == AF_INET6) 
+        if (ifa->ifa_addr->sa_family == AF_INET) 
         {
             addr_s = ((struct sockaddr_in *)ifa->ifa_addr)->sin_addr.s_addr;
             if(addr_s != 0)
