@@ -161,16 +161,6 @@ int main(int argc, char* argv[])
     perror("Bind error");
     return __LINE__;
   }
-  
-  //invert bytes for compliance ips
-  char opponent_ip[sizeof(unsigned long)];
-  char player_ip[sizeof(unsigned long)];
-  
-  *((unsigned long*)opponent_ip) = opponent_addr.sin_addr.s_addr;
-  *((unsigned long*)player_ip) = player_addr.sin_addr.s_addr;
-  
-  invert_four_bytes(opponent_ip);
-  invert_four_bytes(player_ip);
 
   //init threads
   pthread_t tid_control, tid_syncing;
@@ -200,6 +190,16 @@ int main(int argc, char* argv[])
   
   struct args_keys args1 = {sockfd, &direct_p1 ,&opponent_addr, &mutex};
   struct args_keys args2 = {sockfd, &direct_p2 ,&opponent_addr, &mutex};  
+  
+  //invert bytes for compliance ips
+  char opponent_ip[sizeof(unsigned long)];
+  char player_ip[sizeof(unsigned long)];
+  
+  *((unsigned long*)opponent_ip) = opponent_addr.sin_addr.s_addr;
+  *((unsigned long*)player_ip) = player_addr.sin_addr.s_addr;
+  
+  invert_four_bytes(opponent_ip);
+  invert_four_bytes(player_ip);
   
   if(*((int*)player_ip) < *((int*)opponent_ip))
   {
