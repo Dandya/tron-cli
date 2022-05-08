@@ -3,7 +3,7 @@
 /*
  * Note:
  * info.xres, info.yres - размер видимого экрана; 
- *              info.xres_virtual, info.yres_virtual - размер всего экрана 
+ * info.xres_virtual, info.yres_virtual - размер всего экрана 
 */
 
 int work_flag= 1;
