@@ -341,10 +341,10 @@ int main(int argc, char* argv[])
     #ifdef DEBUG
     fprintf(log, "time: %ld\n", tb.millitm - start_millisec);
     #endif
-    // usleep(62000 - ( 
-    //             (tb.millitm >= start_millisec) ? tb.millitm - start_millisec : 1000 - start_millisec + tb.millitm
-    //             )*1000);
-    usleep(62500);
+    usleep(62500 - ( 
+                (tb.millitm >= start_millisec) ? tb.millitm - start_millisec : 1000 - start_millisec + tb.millitm
+                )*1000);
+    //usleep(62500);
     ftime(&tb);
     start_millisec = tb.millitm;
   }
