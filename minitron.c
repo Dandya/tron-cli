@@ -242,10 +242,10 @@ int main(int argc, char* argv[])
   //for wait
   struct timeb tb; 
   time_t start;
+  unsigned short start_millisec, end_millisec;  
 
   #ifdef DEBUG
   FILE* log = fopen("log", "w");
-  unsigned short start_millisec, end_millisec;  
   #endif
 
   ftime(&tb);
@@ -385,18 +385,16 @@ int main(int argc, char* argv[])
     pthread_mutex_unlock(&mutex);
     
     #ifdef DEBUG
-    ftime(&tb);
     fprintf(log, "time: %ld\n", tb.millitm - start_millisec);
     #endif
-    //usleep(62500 - ( 
-    //            (tb.millitm >= start_millisec) ? tb.millitm - start_millisec : 1000 - start_millisec + tb.millitm
-    //            )*1000);
-    usleep(62500);
+    ftime(&tb);
+    usleep(62500 - ( 
+                (tb.millitm >= start_millisec) ? tb.millitm - start_millisec : 1000 - start_millisec + tb.millitm
+                )*1000);
+    //usleep(62500);
 
-    #ifdef DEBUG
     ftime(&tb);
     start_millisec = tb.millitm;
-    #endif
   }
   //close all
   if( pthread_join(tid_control, NULL) != 0 || pthread_kill(tid_syncing, 17) != 0 )
