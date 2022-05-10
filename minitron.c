@@ -250,12 +250,15 @@ int main(int argc, char* argv[])
   start = tb.time;  
   while(is_ready_p1 != 1 || is_ready_p2 != 1)
   {
-      if(tb.time - start >= 5)
+      if(tb.time - start >= 1)
       {
-        work_flag = 0;
+        //work_flag = 0;
+        is_ready_p1 = 1;
+        is_ready_p2 = 1;
       }
       else
       {
+        ftime(&tb);
         continue;
       }
   }
