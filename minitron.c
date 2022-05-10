@@ -76,8 +76,6 @@ int main(int argc, char* argv[])
 
   signal(SIGINT, handler);
   
-  color = 0x00FFFFFF;
-  xstep = ystep = 1;
   page_size = sysconf(_SC_PAGESIZE);
   
   if ( 0 > (fb = open("/dev/fb0", O_RDWR))) 
@@ -209,7 +207,7 @@ int main(int argc, char* argv[])
       index_player = 1;
   }
   
-  pthread_mutex_lock(&mutex); // for wait players
+ // pthread_mutex_lock(&mutex); // for wait players
 
   if( pthread_create(&tid_control, &attr,(void *)control_thread, &args1) != 0 )
   {
@@ -252,30 +250,9 @@ int main(int argc, char* argv[])
   start = tb.time;  
   while(is_ready_p1 != 1 || is_ready_p2 != 1)
   {
-      ftime(&tb);
       if(tb.time - start >= 5)
       {
-        if( pthread_kill(tid_control, 17) != 0 || pthread_kill(tid_syncing, 17) != 0 )
-        {
-          #ifdef DEBUG
-          fclose(log);
-          #endif
-          close(sockfd);
-          munmap(ptr, map_size);
-          close(fb);
-          endwin();
-          fprintf(stderr, "Error of working thread\n");
-          return -1;
-        }
-
-        #ifdef DEBUG
-        fclose(log);
-        #endif
-        close(sockfd);
-        munmap(ptr, map_size);
-        close(fb);
-        endwin();
-        return 3;
+        work_flag = 0;
       }
       else
       {
@@ -283,7 +260,7 @@ int main(int argc, char* argv[])
       }
   }
 
-  pthread_mutex_unlock(&mutex);
+ // pthread_mutex_unlock(&mutex);
   //ftime(&tb);
   //start_millisec = tb.millitm;
   while(work_flag)
