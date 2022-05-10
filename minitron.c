@@ -284,9 +284,10 @@ int main(int argc, char* argv[])
   }
 
   pthread_mutex_unlock(&mutex);
-  
+  ftime(&tb);
+  start_millisec = tb.millitm;
   while(work_flag)
-  { 
+  {
     pthread_mutex_lock(&mutex);
     // move first player's car 
     switch(direct_p1)
