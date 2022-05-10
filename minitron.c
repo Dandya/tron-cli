@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
   initscr();
   noecho();
   cbreak();
-  //halfdelay(0);
+  halfdelay(0);
   curs_set(0);
   int fb, xstep, ystep;
   struct fb_var_screeninfo info;
@@ -242,10 +242,10 @@ int main(int argc, char* argv[])
   //for wait
   struct timeb tb; 
   time_t start;
-  unsigned short start_millisec, end_millisec;  
 
   #ifdef DEBUG
   FILE* log = fopen("log", "w");
+  unsigned short start_millisec, end_millisec;  
   #endif
 
   ftime(&tb);
@@ -284,8 +284,8 @@ int main(int argc, char* argv[])
   }
 
   pthread_mutex_unlock(&mutex);
-  ftime(&tb);
-  start_millisec = tb.millitm;
+  //ftime(&tb);
+  //start_millisec = tb.millitm;
   while(work_flag)
   {
     pthread_mutex_lock(&mutex);
@@ -386,16 +386,18 @@ int main(int argc, char* argv[])
     pthread_mutex_unlock(&mutex);
     
     #ifdef DEBUG
+    ftime(&tb);
     fprintf(log, "time: %ld\n", tb.millitm - start_millisec);
     #endif
-    ftime(&tb);
-    usleep(62500 - ( 
-                (tb.millitm >= start_millisec) ? tb.millitm - start_millisec : 1000 - start_millisec + tb.millitm
-                )*1000);
-    //usleep(62500);
-
+    //ftime(&tb);
+    //usleep(62500 - ( 
+    //            (tb.millitm >= start_millisec) ? tb.millitm - start_millisec : 1000 - start_millisec + tb.millitm
+    //            )*1000);
+    usleep(62500);
+    #ifdef DEBUG
     ftime(&tb);
     start_millisec = tb.millitm;
+    #endif
   }
   //close all
   if( pthread_join(tid_control, NULL) != 0 || pthread_kill(tid_syncing, 17) != 0 )
