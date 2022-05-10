@@ -53,12 +53,9 @@ void invert_four_bytes(char *ptr)
 
 int main(int argc, char* argv[])
 { 
-  // time of one move car
-  struct timeb tb; 
-  unsigned short start_millisec, end_millisec;
-  ftime(&tb);
-  start_millisec = tb.millitm;
 
+  // time of one move car
+  
   if(argc < 4)
   {
       printf("Use: ./minitron.exe <xres> <yres> <opponent's ip>\n");
@@ -70,7 +67,7 @@ int main(int argc, char* argv[])
   initscr();
   noecho();
   cbreak();
-  halfdelay(0);
+  //halfdelay(0);
   curs_set(0);
   int fb, xstep, ystep;
   struct fb_var_screeninfo info;
@@ -187,9 +184,11 @@ int main(int argc, char* argv[])
   char direct_prev_p2 = LEFT;
   char who_lose[] = {0,0};  //who_lose[0] - first player 
   char index_player = 0;    //who_lose[1] - second player
-  
-  struct args_keys args1 = {sockfd, &direct_p1 ,&opponent_addr, &mutex};
-  struct args_keys args2 = {sockfd, &direct_p2 ,&opponent_addr, &mutex};  
+  char is_ready_p1 = 0;
+  char is_ready_p2 = 0;
+
+  struct args_keys args1 = {sockfd, &direct_p1, &is_ready_p1, &opponent_addr, &mutex};
+  struct args_keys args2 = {sockfd, &direct_p2, &is_ready_p2, &opponent_addr, &mutex};  
   
   //invert bytes for compliance ips
   char opponent_ip[sizeof(unsigned long)];
@@ -204,9 +203,13 @@ int main(int argc, char* argv[])
   if(*((int*)player_ip) < *((int*)opponent_ip))
   {
       args1.ptr_direct = &direct_p2;
+      args1.ptr_is_ready_player = &is_ready_p2;
       args2.ptr_direct = &direct_p1;
+      args2.ptr_is_ready_player = &is_ready_p1;
       index_player = 1;
   }
+  
+  pthread_mutex_lock(&mutex); // for wait players
 
   if( pthread_create(&tid_control, &attr,(void *)control_thread, &args1) != 0 )
   {
@@ -236,9 +239,52 @@ int main(int argc, char* argv[])
   draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual);
   char opposite_direct;
 
+  //for wait
+  struct timeb tb; 
+  time_t start;
+
   #ifdef DEBUG
   FILE* log = fopen("log", "w");
+  unsigned short start_millisec, end_millisec;  
   #endif
+
+  ftime(&tb);
+  start = tb.time;  
+  while(is_ready_p1 != 1 || is_ready_p2 != 1)
+  {
+      ftime(&tb);
+      if(tb.time - start >= 5)
+      {
+        if( pthread_kill(tid_control, 17) != 0 || pthread_kill(tid_syncing, 17) != 0 )
+        {
+          #ifdef DEBUG
+          fclose(log);
+          #endif
+          close(sockfd);
+          munmap(ptr, map_size);
+          close(fb);
+          endwin();
+          fprintf(stderr, "Error of working thread\n");
+          return -1;
+        }
+
+        #ifdef DEBUG
+        fclose(log);
+        #endif
+        close(sockfd);
+        munmap(ptr, map_size);
+        close(fb);
+        endwin();
+        return 3;
+      }
+      else
+      {
+        continue;
+      }
+  }
+
+  pthread_mutex_unlock(&mutex);
+  
   while(work_flag)
   { 
     pthread_mutex_lock(&mutex);
@@ -337,16 +383,20 @@ int main(int argc, char* argv[])
       }
     }
     pthread_mutex_unlock(&mutex);
-    ftime(&tb);
+    
     #ifdef DEBUG
+    ftime(&tb);
     fprintf(log, "time: %ld\n", tb.millitm - start_millisec);
     #endif
-    usleep(62500 - ( 
-                (tb.millitm >= start_millisec) ? tb.millitm - start_millisec : 1000 - start_millisec + tb.millitm
-                )*1000);
-    //usleep(62500);
+    //usleep(62500 - ( 
+    //            (tb.millitm >= start_millisec) ? tb.millitm - start_millisec : 1000 - start_millisec + tb.millitm
+    //            )*1000);
+    usleep(62500);
+
+    #ifdef DEBUG
     ftime(&tb);
     start_millisec = tb.millitm;
+    #endif
   }
   //close all
   if( pthread_join(tid_control, NULL) != 0 || pthread_kill(tid_syncing, 17) != 0 )
@@ -359,6 +409,7 @@ int main(int argc, char* argv[])
     close(fb);
     endwin();
     fprintf(stderr, "Error of working thread\n");
+    return -1;
   }
 
   #ifdef DEBUG

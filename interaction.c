@@ -4,6 +4,7 @@ struct args_keys
 {
   int sockfd;
   char* ptr_direct;
+  char* ptr_is_ready_player;
   struct sockaddr_in* ptr_p2_addr;
   pthread_mutex_t* ptr_mtx;
 };
@@ -46,9 +47,19 @@ void control_thread(struct args_keys* args)
   int sockfd = args->sockfd;
   char* ptr_direct = args->ptr_direct;
   pthread_mutex_t* ptr_mtx = args->ptr_mtx;
-  struct sockaddr_in* ptr_p2_addr = args->ptr_p2_addr;
+  struct sockaddr* ptr_p2_addr = args->ptr_p2_addr;
   int len_sockaddr = sizeof(*ptr_p2_addr);
   char direction;
+  
+  fflush(stdin);
+  direction = getchar();
+  *(args->ptr_is_ready_player) = 1;
+  sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
+  
+  //wait start game
+  pthread_mutex_lock(ptr_mtx);
+  pthread_mutex_unlock(ptr_mtx);
+
   while( direction != 'q' && work_flag )
   {
     direction = getchar();
@@ -56,7 +67,7 @@ void control_thread(struct args_keys* args)
     {
       pthread_mutex_lock(ptr_mtx);
       *ptr_direct = direction; 
-      sendto(sockfd, &direction, 1, 0, (struct sockaddr*)ptr_p2_addr, len_sockaddr);
+      sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
       pthread_mutex_unlock(ptr_mtx);
     }
   }
@@ -68,12 +79,21 @@ int syncing_thread(struct args_keys* args)
   int sockfd = args->sockfd;
   char* ptr_direct = args->ptr_direct;
   pthread_mutex_t* ptr_mtx = args->ptr_mtx;
-  struct sockaddr_in* ptr_p2_addr = args->ptr_p2_addr;
+  struct sockaddr* ptr_p2_addr = args->ptr_p2_addr;
   int len_sockaddr = sizeof(*ptr_p2_addr);
   char direction;
+
+  recvfrom(sockfd, &direction, 1, 0, ptr_p2_addr, &len_sockaddr);
+  *(args->ptr_is_ready_player) = 1;
+  
+  //wait start game
+  pthread_mutex_lock(ptr_mtx);
+  pthread_mutex_unlock(ptr_mtx);
+
+
   while(work_flag)
   {
-    recvfrom(sockfd, &direction, 1, 0, (struct sockaddr*) ptr_p2_addr, &len_sockaddr);
+    recvfrom(sockfd, &direction, 1, 0, ptr_p2_addr, &len_sockaddr);
     pthread_mutex_lock(ptr_mtx);
     *ptr_direct = direction;
     pthread_mutex_unlock(ptr_mtx);

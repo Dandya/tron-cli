@@ -32,4 +32,4 @@
 #include "interaction.c"
 #include "draw.c"
 
-//#define DEBUG
+#define DEBUG
