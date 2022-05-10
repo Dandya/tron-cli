@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
   initscr();
   noecho();
   cbreak();
-  halfdelay(0);
+ // halfdelay(0);
   curs_set(0);
   int fb, xstep, ystep;
   struct fb_var_screeninfo info;
