@@ -235,34 +235,34 @@ int main(int argc, char* argv[])
   draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
   draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual);
   char opposite_direct;
-
-  //for wait
-  struct timeb tb; 
-  time_t start;
-
-  #ifdef DEBUG
-  FILE* log = fopen("log", "w");
-  unsigned short start_millisec, end_millisec;  
-  #endif
-
-  ftime(&tb);
-  start = tb.time;  
-  while(is_ready_p1 != 1 || is_ready_p2 != 1)
-  {
-      if(tb.time - start >= 1)
-      {
-//         work_flag = 0;
-        is_ready_p1 = 1;
-        is_ready_p2 = 1;
-      }
-      else
-      {
-        ftime(&tb);
-        continue;
-      }
-      draw_area(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
-      	yres_area, info.xres_virtual);
-  }
+ 
+// for wait
+//   struct timeb tb; 
+//   time_t start;
+// 
+//   #ifdef DEBUG
+//   FILE* log = fopen("log", "w");
+//   unsigned short start_millisec, end_millisec;  
+//   #endif
+// 
+//   ftime(&tb);
+//   start = tb.time;  
+//   while(is_ready_p1 != 1 || is_ready_p2 != 1)
+//   {
+//       if(tb.time - start >= 1)
+//       {
+//        work_flag = 0;
+//         is_ready_p1 = 1;
+//         is_ready_p2 = 1;
+//       }
+//       else
+//       {
+//         ftime(&tb);
+//         continue;
+//       }
+//       draw_area(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
+//       	yres_area, info.xres_virtual);
+//   }
 // 
  // pthread_mutex_unlock(&mutex);
   //ftime(&tb);
