@@ -61,11 +61,11 @@ int main(int argc, char* argv[])
 
   //init screen
   printf("\033c"); //clear stdout
-  initscr();
-  noecho();
-  cbreak();
-  halfdelay(0);
-  curs_set(0);
+//   initscr();
+//   noecho();
+//   cbreak();
+//   halfdelay(0);
+//   curs_set(0);
 //   fflush(stdin);
 //   setvbuf(stdin, NULL, _IONBF, 0);
   int fb, xstep, ystep;
