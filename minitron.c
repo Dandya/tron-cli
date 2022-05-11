@@ -51,6 +51,31 @@ void invert_four_bytes(char *ptr)
     ptr[2]=tmp;
 }
 
+static struct termios stored_settings;
+
+void set_keypress(void)
+{
+	struct termios new_settings;
+
+	tcgetattr(0,&stored_settings);
+
+	new_settings = stored_settings;
+
+	new_settings.c_lflag &= (~ICANON & ~ECHO);
+	new_settings.c_cc[VTIME] = 0;
+	new_settings.c_cc[VMIN] = 1;
+
+	tcsetattr(0,TCSANOW,&new_settings);
+	return;
+}
+
+void reset_keypress(void)
+{
+	tcsetattr(0,TCSANOW,&stored_settings);
+	return;
+}
+
+
 int main(int argc, char* argv[])
 { 
   if(argc < 4)
@@ -61,6 +86,7 @@ int main(int argc, char* argv[])
 
   //init screen
   printf("\033c"); //clear stdout
+  set_keypress();
 //   initscr();
 //   noecho();
 //   cbreak();
@@ -403,8 +429,8 @@ int main(int argc, char* argv[])
   close(sockfd);
   munmap(ptr, map_size);
   close(fb);
-  endwin();
-
+  //endwin();
+  reset_keypress();
   //print result of game
   printf("\033c\n\t*\t\t\t\t\t\t\t\t\t*\t\t*\n*\t\t\t\t*\t\t\t\t*\n\n\t*\t\t\t\t*\t\t\t\t\t\t*\n");
   if(who_lose[index_player] == 0 && who_lose[0] != who_lose[1])

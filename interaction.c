@@ -44,9 +44,9 @@ int get_local_ip(unsigned long addr_c)
 
 void control_thread(struct args_keys* args)
 {
-  initscr();
-  noecho();
-  curs_set(0);
+  // initscr();
+  // noecho();
+  // curs_set(0);
   int sockfd = args->sockfd;
   char* ptr_direct = args->ptr_direct;
   pthread_mutex_t* ptr_mtx = args->ptr_mtx;
@@ -64,7 +64,7 @@ void control_thread(struct args_keys* args)
 //   pthread_mutex_unlock(ptr_mtx);
   while( direction != 'q' && work_flag )
   {
-    direction = getch();
+    direction = getchar();
     if(direction == UP || direction == DOWN || direction == LEFT || direction == RIGHT)
     {
       pthread_mutex_lock(ptr_mtx);

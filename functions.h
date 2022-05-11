@@ -8,7 +8,9 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <signal.h>
-#include <curses.h>
+//#include <curses.h>
+#include <termios.h>
+
 #include <pthread.h>
 
 #include <arpa/inet.h>
