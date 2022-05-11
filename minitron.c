@@ -53,9 +53,6 @@ void invert_four_bytes(char *ptr)
 
 int main(int argc, char* argv[])
 { 
-
-  // time of one move car
-  
   if(argc < 4)
   {
       printf("Use: ./minitron.exe <xres> <yres> <opponent's ip>\n");
@@ -67,8 +64,10 @@ int main(int argc, char* argv[])
   initscr();
   noecho();
   cbreak();
- // halfdelay(0);
+  halfdelay(0);
   curs_set(0);
+//   fflush(stdin);
+//   setvbuf(stdin, NULL, _IONBF, 0);
   int fb, xstep, ystep;
   struct fb_var_screeninfo info;
   size_t fb_size, map_size, page_size;
@@ -252,7 +251,7 @@ int main(int argc, char* argv[])
   {
       if(tb.time - start >= 1)
       {
-        //work_flag = 0;
+//         work_flag = 0;
         is_ready_p1 = 1;
         is_ready_p2 = 1;
       }
@@ -261,13 +260,16 @@ int main(int argc, char* argv[])
         ftime(&tb);
         continue;
       }
+      draw_area(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
+      	yres_area, info.xres_virtual);
   }
-
+// 
  // pthread_mutex_unlock(&mutex);
   //ftime(&tb);
   //start_millisec = tb.millitm;
   while(work_flag)
   {
+//     refresh();
     pthread_mutex_lock(&mutex);
     // move first player's car 
     switch(direct_p1)
