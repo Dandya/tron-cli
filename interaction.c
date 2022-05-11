@@ -44,6 +44,9 @@ int get_local_ip(unsigned long addr_c)
 
 void control_thread(struct args_keys* args)
 {
+  initscr();
+  noecho();
+  curs_set(0);
   int sockfd = args->sockfd;
   char* ptr_direct = args->ptr_direct;
   pthread_mutex_t* ptr_mtx = args->ptr_mtx;
@@ -57,12 +60,11 @@ void control_thread(struct args_keys* args)
  // sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
   
   //wait start game
- // pthread_mutex_lock(ptr_mtx);
- // pthread_mutex_unlock(ptr_mtx);
-
+//   pthread_mutex_lock(ptr_mtx);
+//   pthread_mutex_unlock(ptr_mtx);
   while( direction != 'q' && work_flag )
   {
-    direction = getchar();
+    direction = getch();
     if(direction == UP || direction == DOWN || direction == LEFT || direction == RIGHT)
     {
       pthread_mutex_lock(ptr_mtx);
@@ -70,6 +72,7 @@ void control_thread(struct args_keys* args)
       sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
       pthread_mutex_unlock(ptr_mtx);
     }
+    fflush(stdin);
   }
   work_flag = 0;
 }

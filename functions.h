@@ -8,7 +8,7 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <signal.h>
-#include <ncurses.h>
+#include <curses.h>
 #include <pthread.h>
 
 #include <arpa/inet.h>

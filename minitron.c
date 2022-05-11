@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
 //   halfdelay(0);
 //   curs_set(0);
 //   fflush(stdin);
-//   setvbuf(stdin, NULL, _IONBF, 0);
+//setvbuf(stdin, NULL, _IONBF, 0);
   int fb, xstep, ystep;
   struct fb_var_screeninfo info;
   size_t fb_size, map_size, page_size;
@@ -206,7 +206,7 @@ int main(int argc, char* argv[])
       index_player = 1;
   }
   
- // pthread_mutex_lock(&mutex); // for wait players
+//    pthread_mutex_lock(&mutex); // for wait players
 
   if( pthread_create(&tid_control, &attr,(void *)control_thread, &args1) != 0 )
   {
@@ -228,6 +228,9 @@ int main(int argc, char* argv[])
     return 2;
   }
   
+//   pthread_mutex_lock(&mutex);
+//   pthread_mutex_unlock(&mutex);
+  usleep(1000);
   // start game
   uint32_t background_color = ptr_car_p2[0];
   draw_area(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
@@ -264,7 +267,6 @@ int main(int argc, char* argv[])
 //       	yres_area, info.xres_virtual);
 //   }
 // 
- // pthread_mutex_unlock(&mutex);
   //ftime(&tb);
   //start_millisec = tb.millitm;
   while(work_flag)
