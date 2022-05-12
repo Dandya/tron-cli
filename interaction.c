@@ -77,7 +77,6 @@ void control_thread(struct args_keys* args)
       sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
       pthread_mutex_unlock(ptr_mtx);
     }
-    fflush(stdin);
   }
   work_flag = 0;
 }
