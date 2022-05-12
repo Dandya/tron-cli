@@ -55,9 +55,9 @@ void control_thread(struct args_keys* args)
   int len_sockaddr = sizeof(*ptr_p2_addr);
   char direction;
   
-//   direction = getchar();
-//   *(args->ptr_is_ready_player) = 1;
-//   sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
+  direction = getchar();
+  *(args->ptr_is_ready_player) = 1;
+  sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
 
 //wait start game
  // pthread_mutex_lock(ptr_mtx); 
@@ -90,13 +90,17 @@ int syncing_thread(struct args_keys* args)
   int len_sockaddr = sizeof(*ptr_p2_addr);
   char direction;
 
-   recvfrom(sockfd, &direction, 1, 0, ptr_p2_addr, &len_sockaddr);
+  // recvfrom(sockfd, &direction, 1, 0, ptr_p2_addr, &len_sockaddr);
    *(args->ptr_is_ready_player) = 1;
   
   //wait start game
   // pthread_mutex_lock(ptr_mtx);
   // pthread_mutex_unlock(ptr_mtx);
-
+  
+  while(ready_flag != 1)
+  {
+      usleep(1);
+  }
 
   while(work_flag)
   {
