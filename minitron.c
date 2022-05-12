@@ -6,7 +6,8 @@
  * info.xres_virtual, info.yres_virtual - размер всего экрана 
 */
 
-int work_flag= 1;
+int work_flag = 1;
+int ready_flag = 0;
 
 void handler(int none)
 {
@@ -86,14 +87,14 @@ int main(int argc, char* argv[])
 
   //init screen
   printf("\033c"); //clear stdout
-  set_keypress();
+  set_keypress(); // set noecho and cbreak modes stdin
+
 //   initscr();
 //   noecho();
 //   cbreak();
 //   halfdelay(0);
 //   curs_set(0);
-//   fflush(stdin);
-//setvbuf(stdin, NULL, _IONBF, 0);
+  
   int fb, xstep, ystep;
   struct fb_var_screeninfo info;
   size_t fb_size, map_size, page_size;
@@ -232,7 +233,7 @@ int main(int argc, char* argv[])
       index_player = 1;
   }
   
-//    pthread_mutex_lock(&mutex); // for wait players
+  //pthread_mutex_lock(&mutex); // for wait players
 
   if( pthread_create(&tid_control, &attr,(void *)control_thread, &args1) != 0 )
   {
@@ -254,37 +255,35 @@ int main(int argc, char* argv[])
     return 2;
   }
   
-//   pthread_mutex_lock(&mutex);
-//   pthread_mutex_unlock(&mutex);
-//   puts("key");// for wait
-//   struct timeb tb; 
-//   time_t start;
-// 
-//   #ifdef DEBUG
-//   FILE* log = fopen("log", "w");
-//   unsigned short start_millisec, end_millisec;  
-//   #endif
-// 
-//   ftime(&tb);
-//   start = tb.time;  
+  printf("For start input any key");// for wait
+  struct timeb tb; 
+  time_t start;
+
+  #ifdef DEBUG
+  FILE* log = fopen("log", "w");
+  unsigned short start_millisec, end_millisec;  
+  #endif
+
+  ftime(&tb);
+  start = tb.time;  
 //   while(is_ready_p1 != 1 || is_ready_p2 != 1)
-//   while(is_ready_p1 != 1)
-//   {
-//       if(tb.time - start >= 10)
-//       {
-//         work_flag = 0;
-//         is_ready_p1 = 1;
-//         is_ready_p2 = 1;
-//       }
-//       else
-//       {
-//         ftime(&tb);
-//         continue;
-//       }
-//   }
-// 
-//   fflush(stdout);
-  usleep(10000);
+  while(is_ready_p1 != 1)
+  {
+      if(tb.time - start >= 10)
+      {
+        work_flag = 0;
+        is_ready_p1 = 1;
+        is_ready_p2 = 1;
+      }
+      else
+      {
+        usleep(1);
+        ftime(&tb);
+        continue;
+      }
+  }
+  ready_flag  = 1;
+
   // start game
   uint32_t background_color = ptr_car_p2[0];
   draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
@@ -293,6 +292,7 @@ int main(int argc, char* argv[])
   draw_area(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
           yres_area, info.xres_virtual);
  
+ // pthread_mutex_unlock(&mutex);
 // for wait
 //   struct timeb tb; 
 //   time_t start;
