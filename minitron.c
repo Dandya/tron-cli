@@ -7,75 +7,14 @@
 */
 
 int work_flag = 1;
-int ready_flag = 0;
-
-void handler(int none)
-{
-  work_flag = 0;
-}
-
-void move_car(uint32_t** ptr_car, char direct, int scr_xres)
-{
-  switch(direct)
-  {
-    case UP:
-      {
-        *ptr_car -= scr_xres;
-        break;
-      }
-      case DOWN:
-      {
-        *ptr_car += scr_xres;
-        break;
-      }
-      case LEFT:
-      {
-        *ptr_car -= 1;
-        break;
-      }
-      case RIGHT:
-      {
-        *ptr_car += 1;
-        break;
-      }
-  }
-}
-
-void invert_four_bytes(char *ptr)
-{
-    char tmp=ptr[0];
-    ptr[0]=ptr[3];
-    ptr[3]=tmp;
-    
-    tmp=ptr[1];
-    ptr[1]=ptr[2];
-    ptr[2]=tmp;
-}
-
+int start_flag = 0;
 static struct termios stored_settings;
 
-void set_keypress(void)
-{
-	struct termios new_settings;
-
-	tcgetattr(0,&stored_settings);
-
-	new_settings = stored_settings;
-
-	new_settings.c_lflag &= (~ICANON & ~ECHO);
-	new_settings.c_cc[VTIME] = 0;
-	new_settings.c_cc[VMIN] = 1;
-
-	tcsetattr(0,TCSANOW,&new_settings);
-	return;
-}
-
-void reset_keypress(void)
-{
-	tcsetattr(0,TCSANOW,&stored_settings);
-	return;
-}
-
+void handler(int none);
+void move_car(uint32_t** ptr_car, char direct, int scr_xres);
+void invert_four_bytes(char *ptr);
+void set_keypress(void);
+void reset_keypress(void);
 
 int main(int argc, char* argv[])
 { 
@@ -89,12 +28,6 @@ int main(int argc, char* argv[])
   printf("\033c"); //clear stdout
   set_keypress(); // set noecho and cbreak modes stdin
 
-//   initscr();
-//   noecho();
-//   cbreak();
-//   halfdelay(0);
-//   curs_set(0);
-  
   int fb, xstep, ystep;
   struct fb_var_screeninfo info;
   size_t fb_size, map_size, page_size;
@@ -107,6 +40,7 @@ int main(int argc, char* argv[])
   if ( 0 > (fb = open("/dev/fb0", O_RDWR))) 
   {
     perror("open");
+    reset_keypress();
     return __LINE__;
   }
 
@@ -114,6 +48,7 @@ int main(int argc, char* argv[])
   {
     perror("ioctl");
     close(fb);
+    reset_keypress();
     return __LINE__;
   }
 
@@ -125,6 +60,7 @@ int main(int argc, char* argv[])
   {
     perror("mmap");
     close(fb);
+    reset_keypress();
     return __LINE__;
   }
   
@@ -134,7 +70,7 @@ int main(int argc, char* argv[])
   {
     munmap(ptr, map_size);
     close(fb);
-    endwin();
+    reset_keypress();
     perror("Big size of area");
     return __LINE__;
   }
@@ -147,7 +83,7 @@ int main(int argc, char* argv[])
   {
     munmap(ptr, map_size);
     close(fb);
-    endwin();
+    reset_keypress();
     perror("Socket creation failed");
     return __LINE__;
   }
@@ -166,19 +102,18 @@ int main(int argc, char* argv[])
     close(sockfd);
     munmap(ptr, map_size);
     close(fb);
-    endwin();
+    reset_keypress();
     perror("Incorrect opponent's ip");
     printf("Your ip:%s", inet_ntoa(player_addr.sin_addr));
     return __LINE__;
   }
-
 
   if(bind(sockfd, (struct sockaddr*)&player_addr, sizeof(player_addr)) < 0)
   {
     close(sockfd);
     munmap(ptr, map_size);
     close(fb);
-    endwin();
+    reset_keypress();
     perror("Bind error");
     return __LINE__;
   }
@@ -193,7 +128,7 @@ int main(int argc, char* argv[])
     close(sockfd);
     munmap(ptr, map_size);
     close(fb);
-    endwin();
+    reset_keypress();
     fprintf(stderr, "Error of init attr\n");
     return 1;
   }
@@ -226,21 +161,17 @@ int main(int argc, char* argv[])
   
   if(*((int*)player_ip) < *((int*)opponent_ip))
   {
-      args1.ptr_direct = &direct_p2;
-      args1.ptr_is_ready_player = &is_ready_p2;
-      args2.ptr_direct = &direct_p1;
-      args2.ptr_is_ready_player = &is_ready_p1;
+      args1.ptr_direct = &direct_p2; args1.ptr_is_ready_player = &is_ready_p2;
+      args2.ptr_direct = &direct_p1; args2.ptr_is_ready_player = &is_ready_p1;
       index_player = 1;
   }
   
-  //pthread_mutex_lock(&mutex); // for wait players
-
   if( pthread_create(&tid_control, &attr,(void *)control_thread, &args1) != 0 )
   {
     close(sockfd);
     munmap(ptr, map_size);
     close(fb);
-    endwin();
+    reset_keypress();
     fprintf(stderr, "Error of create thread\n");
     return 2;
   }
@@ -250,20 +181,17 @@ int main(int argc, char* argv[])
     close(sockfd);
     munmap(ptr, map_size);
     close(fb);
-    endwin();
+    reset_keypress();
     fprintf(stderr, "Error of create thread\n");
     return 2;
   }
   
   printf("For start input any key");// for wait
   struct timeb tb; 
-  time_t start_t;
+  time_t start_t; 
+ #if CLOCK_PER_SEC == 1000000
   clock_t start_c;
-
-  #ifdef DEBUG
-  FILE* log = fopen("log", "w");
-  unsigned short start_millisec, end_millisec;  
-  #endif
+ #endif
 
   ftime(&tb);
   start_t = tb.time;  
@@ -281,10 +209,12 @@ int main(int argc, char* argv[])
         ftime(&tb);
       }
   }
-  ready_flag  = 1;
+  start_flag = 1;
 
-  // start game
+  // start game 
+ #if CLOCK_PER_SEC == 1000000
   start_c = clock();
+ #endif
   uint32_t background_color = ptr_car_p2[0];
   draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
   draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual);
@@ -292,40 +222,8 @@ int main(int argc, char* argv[])
   draw_area(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
           yres_area, info.xres_virtual);
  
- // pthread_mutex_unlock(&mutex);
-// for wait
-//   struct timeb tb; 
-//   time_t start;
-// 
-//   #ifdef DEBUG
-//   FILE* log = fopen("log", "w");
-//   unsigned short start_millisec, end_millisec;  
-//   #endif
-// 
-//   ftime(&tb);
-//   start = tb.time;  
-//   while(is_ready_p1 != 1 || is_ready_p2 != 1)
-//   {
-//       if(tb.time - start >= 1)
-//       {
-//        work_flag = 0;
-//         is_ready_p1 = 1;
-//         is_ready_p2 = 1;
-//       }
-//       else
-//       {
-//         ftime(&tb);
-//         continue;
-//       }
-//       draw_area(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
-//       	yres_area, info.xres_virtual);
-//   }
-
-  //ftime(&tb);
-  //start_millisec = tb.millitm;
   while(work_flag)
   {
-//     refresh();
     pthread_mutex_lock(&mutex);
     // move first player's car 
     switch(direct_p1)
@@ -421,22 +319,13 @@ int main(int argc, char* argv[])
         who_lose[1] = 1;
       }
     }
-    pthread_mutex_unlock(&mutex);
-    
-    #ifdef DEBUG
-    ftime(&tb);
-    fprintf(log, "time: %ld\n", tb.millitm - start_millisec);
-    #endif
-    //ftime(&tb);
-    //usleep(62500 - ( 
-    //            (tb.millitm >= start_millisec) ? tb.millitm - start_millisec : 1000 - start_millisec + tb.millitm
-    //            )*1000);
-    usleep(62500 - clock() + start_c);
+    pthread_mutex_unlock(&mutex);    
+   #if CLOCK_PER_SEC == 1000000
+    usleep(62500 - clock() + start_c); // clock() returns microsecs
     start_c = clock();
-    #ifdef DEBUG
-    ftime(&tb);
-    start_millisec = tb.millitm;
-    #endif
+   #else
+    usleep(62500);
+   #endif
   }
   //close all
   if( pthread_join(tid_control, NULL) != 0 || pthread_kill(tid_syncing, 17) != 0 )
@@ -447,19 +336,16 @@ int main(int argc, char* argv[])
     close(sockfd);
     munmap(ptr, map_size);
     close(fb);
-    endwin();
+    reset_keypress();
     fprintf(stderr, "Error of working thread\n");
     return -1;
   }
 
-  #ifdef DEBUG
-  fclose(log);
-  #endif
   close(sockfd);
   munmap(ptr, map_size);
   close(fb);
-  //endwin();
   reset_keypress();
+  
   //print result of game
   printf("\033c\n\t*\t\t\t\t\t\t\t\t\t*\t\t*\n*\t\t\t\t*\t\t\t\t*\n\n\t*\t\t\t\t*\t\t\t\t\t\t*\n");
   if(who_lose[index_player] == 0 && who_lose[0] != who_lose[1])
@@ -468,3 +354,69 @@ int main(int argc, char* argv[])
     printf("\t\t\t\t\t\t\tYou lose:(\n");
   return 0;
 }
+
+void handler(int none)
+{
+  work_flag = 0;
+}
+
+void move_car(uint32_t** ptr_car, char direct, int scr_xres)
+{
+  switch(direct)
+  {
+    case UP:
+      {
+        *ptr_car -= scr_xres;
+        break;
+      }
+      case DOWN:
+      {
+        *ptr_car += scr_xres;
+        break;
+      }
+      case LEFT:
+      {
+        *ptr_car -= 1;
+        break;
+      }
+      case RIGHT:
+      {
+        *ptr_car += 1;
+        break;
+      }
+  }
+}
+
+void invert_four_bytes(char *ptr)
+{
+    char tmp=ptr[0];
+    ptr[0]=ptr[3];
+    ptr[3]=tmp;
+    
+    tmp=ptr[1];
+    ptr[1]=ptr[2];
+    ptr[2]=tmp;
+}
+
+void set_keypress(void)
+{
+	struct termios new_settings;
+
+	tcgetattr(0,&stored_settings);
+
+	new_settings = stored_settings;
+
+	new_settings.c_lflag &= (~ICANON & ~ECHO);
+	new_settings.c_cc[VTIME] = 0;
+	new_settings.c_cc[VMIN] = 1;
+
+	tcsetattr(0,TCSANOW,&new_settings);
+	return;
+}
+
+void reset_keypress(void)
+{
+	tcsetattr(0,TCSANOW,&stored_settings);
+	return;
+}
+

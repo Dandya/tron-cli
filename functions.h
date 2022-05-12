@@ -8,7 +8,6 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <signal.h>
-//#include <ncurses.h>
 #include <termios.h>
 
 #include <pthread.h>
@@ -35,4 +34,3 @@
 #include "interaction.c"
 #include "draw.c"
 
-//#define DEBUG

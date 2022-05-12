@@ -1,5 +1,5 @@
 extern int work_flag;
-extern int ready_flag;
+extern int start_flag;
 
 struct args_keys
 {
@@ -45,13 +45,10 @@ int get_local_ip(unsigned long addr_c)
 
 void control_thread(struct args_keys* args)
 {
-  // initscr();
-  // noecho();
-  // curs_set(0);
   int sockfd = args->sockfd;
   char* ptr_direct = args->ptr_direct;
   pthread_mutex_t* ptr_mtx = args->ptr_mtx;
-  struct sockaddr* ptr_p2_addr = args->ptr_p2_addr;
+  struct sockaddr* ptr_p2_addr = (struct sockaddr*)args->ptr_p2_addr;
   int len_sockaddr = sizeof(*ptr_p2_addr);
   char direction;
   
@@ -59,10 +56,8 @@ void control_thread(struct args_keys* args)
   *(args->ptr_is_ready_player) = 1;
   sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
 
-//wait start game
- // pthread_mutex_lock(ptr_mtx); 
- // pthread_mutex_unlock(ptr_mtx);
-  while(ready_flag != 1)
+  //wait start game
+  while( start_flag != 1 )
   {
       usleep(1);
   }
@@ -86,18 +81,15 @@ int syncing_thread(struct args_keys* args)
   int sockfd = args->sockfd;
   char* ptr_direct = args->ptr_direct;
   pthread_mutex_t* ptr_mtx = args->ptr_mtx;
-  struct sockaddr* ptr_p2_addr = args->ptr_p2_addr;
+  struct sockaddr* ptr_p2_addr = (struct sockaddr*)args->ptr_p2_addr;
   int len_sockaddr = sizeof(*ptr_p2_addr);
   char direction;
 
-   recvfrom(sockfd, &direction, 1, 0, ptr_p2_addr, &len_sockaddr);
-   *(args->ptr_is_ready_player) = 1;
+  recvfrom(sockfd, &direction, 1, 0, ptr_p2_addr, &len_sockaddr);
+  *(args->ptr_is_ready_player) = 1;
   
   //wait start game
-  // pthread_mutex_lock(ptr_mtx);
-  // pthread_mutex_unlock(ptr_mtx);
-  
-  while(ready_flag != 1)
+  while(start_flag != 1)
   {
       usleep(1);
   }
