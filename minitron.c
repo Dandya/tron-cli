@@ -267,21 +267,22 @@ int main(int argc, char* argv[])
   ftime(&tb);
   start = tb.time;  
 //   while(is_ready_p1 != 1 || is_ready_p2 != 1)
-  while(is_ready_p1 != 1)
-  {
-      if(tb.time - start >= 10)
-      {
-        work_flag = 0;
-        is_ready_p1 = 1;
-        is_ready_p2 = 1;
-      }
-      else
-      {
-        usleep(1);
-        ftime(&tb);
-        continue;
-      }
-  }
+//   while(is_ready_p1 != 1)
+//   {
+//       if(tb.time - start >= 10)
+//       {
+//         work_flag = 0;
+//         is_ready_p1 = 1;
+//         is_ready_p2 = 1;
+//       }
+//       else
+//       {
+//         usleep(1);
+//         ftime(&tb);
+//         continue;
+//       }
+//   }
+  getchar();
   ready_flag  = 1;
 
   // start game
