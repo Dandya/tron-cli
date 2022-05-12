@@ -8,7 +8,7 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <signal.h>
-//#include <curses.h>
+//#include <ncurses.h>
 #include <termios.h>
 
 #include <pthread.h>
@@ -21,6 +21,7 @@
 #include <linux/if_link.h>
 
 #include <sys/timeb.h>
+#include <time.h>
 
 #define UP 'w'
 #define DOWN 's'

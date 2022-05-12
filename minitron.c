@@ -257,7 +257,8 @@ int main(int argc, char* argv[])
   
   printf("For start input any key");// for wait
   struct timeb tb; 
-  time_t start;
+  time_t start_t;
+  clock_t start_c;
 
   #ifdef DEBUG
   FILE* log = fopen("log", "w");
@@ -265,10 +266,10 @@ int main(int argc, char* argv[])
   #endif
 
   ftime(&tb);
-  start = tb.time;  
+  start_t = tb.time;  
   while(is_ready_p1 != 1 || is_ready_p2 != 1)
   {
-      if(tb.time - start >= 10)
+      if(tb.time - start_t >= 10)
       {
         work_flag = 0;
         is_ready_p1 = 1;
@@ -283,6 +284,7 @@ int main(int argc, char* argv[])
   ready_flag  = 1;
 
   // start game
+  start_c = clock();
   uint32_t background_color = ptr_car_p2[0];
   draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
   draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual);
@@ -429,7 +431,8 @@ int main(int argc, char* argv[])
     //usleep(62500 - ( 
     //            (tb.millitm >= start_millisec) ? tb.millitm - start_millisec : 1000 - start_millisec + tb.millitm
     //            )*1000);
-    usleep(62500);
+    usleep(62500 - clock() + start_c);
+    start_c = clock();
     #ifdef DEBUG
     ftime(&tb);
     start_millisec = tb.millitm;
