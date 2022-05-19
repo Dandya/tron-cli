@@ -28,10 +28,10 @@ int main(int argc, char* argv[])
   printf("\033c"); //clear stdout
   set_keypress(); // set noecho and cbreak modes stdin
 
-  int fb, xstep, ystep;
+  int fb;
   struct fb_var_screeninfo info;
   size_t fb_size, map_size, page_size;
-  uint32_t *ptr, color;
+  uint32_t *ptr;
 
   signal(SIGINT, handler);
   
@@ -39,14 +39,14 @@ int main(int argc, char* argv[])
   
   if ( 0 > (fb = open("/dev/fb0", O_RDWR))) 
   {
-    perror("open");
+    printf("open");
     reset_keypress();
     return __LINE__;
   }
 
   if ( (-1) == ioctl(fb, FBIOGET_VSCREENINFO, &info)) 
   {
-    perror("ioctl");
+    printf("ioctl");
     close(fb);
     reset_keypress();
     return __LINE__;
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
   ptr = mmap(NULL, map_size, PROT_READ | PROT_WRITE, MAP_SHARED, fb, 0);
   if ( MAP_FAILED == ptr ) 
   {
-    perror("mmap");
+    printf("mmap");
     close(fb);
     reset_keypress();
     return __LINE__;
@@ -66,12 +66,16 @@ int main(int argc, char* argv[])
   
   int xres_area = atoi(argv[1]);
   int yres_area = atoi(argv[2]);
-  if(xres_area + 2 > info.xres || yres_area + 2 > info.yres) //considering the boundaries
+#ifdef WITHOUTCURSOR
+  if(xres_area + 2 > info.xres || yres_area + 2 > info.yres) //considering the boundaries 
+#else 
+  if(xres_area + 2 > info.xres || yres_area + 2 > info.yres-32) //considering the boundaries and first line
+#endif
   {
     munmap(ptr, map_size);
     close(fb);
     reset_keypress();
-    perror("Big size of area");
+    printf("Big size of area");
     return __LINE__;
   }
 
@@ -84,7 +88,7 @@ int main(int argc, char* argv[])
     munmap(ptr, map_size);
     close(fb);
     reset_keypress();
-    perror("Socket creation failed");
+    printf("Socket creation failed");
     return __LINE__;
   }
   
@@ -103,7 +107,7 @@ int main(int argc, char* argv[])
     munmap(ptr, map_size);
     close(fb);
     reset_keypress();
-    perror("Incorrect opponent's ip");
+    printf("Incorrect opponent's ip\n");
     printf("Your ip:%s", inet_ntoa(player_addr.sin_addr));
     return __LINE__;
   }
@@ -114,7 +118,7 @@ int main(int argc, char* argv[])
     munmap(ptr, map_size);
     close(fb);
     reset_keypress();
-    perror("Bind error");
+    printf("Bind error");
     return __LINE__;
   }
 
@@ -141,6 +145,7 @@ int main(int argc, char* argv[])
   char direct_p2= LEFT;
   char direct_prev_p1 = RIGHT;
   char direct_prev_p2 = LEFT;
+  char is_need_additional_pixel = 0;
   char who_lose[] = {0,0};  //who_lose[0] - first player 
   char index_player = 0;    //who_lose[1] - second player
   char is_ready_p1 = 0;
@@ -186,7 +191,6 @@ int main(int argc, char* argv[])
     return 2;
   }
   
-  printf("For start input any key");// for wait
   struct timeb tb; 
   time_t start_t; 
  #if CLOCK_PER_SEC == 1000000
@@ -194,6 +198,9 @@ int main(int argc, char* argv[])
  #endif
 
   ftime(&tb);
+#ifndef WITHOUTCURSOR
+  printf("For start press any key");
+#endif
   start_t = tb.time;  
   while(is_ready_p1 != 1 || is_ready_p2 != 1)
   {
@@ -231,21 +238,29 @@ int main(int argc, char* argv[])
       case UP:
       {
         opposite_direct = DOWN;
+        if( direct_prev_p1 == LEFT || direct_prev_p1 == RIGHT )
+            is_need_additional_pixel = 1;
         break;
       }
       case DOWN:
       {
-        opposite_direct = UP;
+        opposite_direct = UP;  
+        if( direct_prev_p1 == LEFT || direct_prev_p1 == RIGHT )
+            is_need_additional_pixel = 1;
         break;
       }
       case LEFT:
       {
-        opposite_direct = RIGHT;
+        opposite_direct = RIGHT;  
+        if( direct_prev_p1 == UP || direct_prev_p1 == DOWN )
+            is_need_additional_pixel = 1;
         break;
       }
       case RIGHT:
       {
-        opposite_direct = LEFT;
+        opposite_direct = LEFT;  
+        if( direct_prev_p1 == DOWN || direct_prev_p1 == DOWN )
+            is_need_additional_pixel = 1;
         break;
       }
     }
@@ -253,6 +268,12 @@ int main(int argc, char* argv[])
     {
       delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual, background_color);
       *ptr_car_p1 = RED;
+      if(is_need_additional_pixel)
+      {
+        move_car(&ptr_car_p1, direct_p1, info.xres_virtual);
+        *ptr_car_p1 = RED;
+        is_need_additional_pixel = 0;
+      }
       move_car(&ptr_car_p1, direct_p1, info.xres_virtual);
       if(draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual))
       {
@@ -278,21 +299,29 @@ int main(int argc, char* argv[])
       case UP:
       {
         opposite_direct = DOWN;
+        if( direct_prev_p2 == LEFT || direct_prev_p2 == RIGHT )
+            is_need_additional_pixel = 1;
         break;
       }
       case DOWN:
       {
         opposite_direct = UP;
+        if( direct_prev_p2 == LEFT || direct_prev_p2 == RIGHT )
+            is_need_additional_pixel = 1;
         break;
       }
       case LEFT:
       {
         opposite_direct = RIGHT;
+        if( direct_prev_p2 == UP || direct_prev_p2 == DOWN )
+            is_need_additional_pixel = 1;
         break;
       }
       case RIGHT:
       {
         opposite_direct = LEFT;
+        if( direct_prev_p2 == UP || direct_prev_p2 == DOWN )
+            is_need_additional_pixel = 1;
         break;
       }
     }
@@ -300,6 +329,12 @@ int main(int argc, char* argv[])
     {
       delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual, background_color);
       *ptr_car_p2 = BLUE;
+      if(is_need_additional_pixel)
+      {
+        move_car(&ptr_car_p2, direct_p2, info.xres_virtual);
+        *ptr_car_p2 = BLUE;
+        is_need_additional_pixel = 0;
+      }
       move_car(&ptr_car_p2, direct_p2, info.xres_virtual);
       if(draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual))
       {
@@ -330,9 +365,6 @@ int main(int argc, char* argv[])
   //close all
   if( pthread_join(tid_control, NULL) != 0 || pthread_kill(tid_syncing, 17) != 0 )
   {
-    #ifdef DEBUG
-    fclose(log);
-    #endif
     close(sockfd);
     munmap(ptr, map_size);
     close(fb);
@@ -345,7 +377,6 @@ int main(int argc, char* argv[])
   munmap(ptr, map_size);
   close(fb);
   reset_keypress();
-  
   //print result of game
   printf("\033c\n\t*\t\t\t\t\t\t\t\t\t*\t\t*\n*\t\t\t\t*\t\t\t\t*\n\n\t*\t\t\t\t*\t\t\t\t\t\t*\n");
   if(who_lose[index_player] == 0 && who_lose[0] != who_lose[1])
@@ -400,7 +431,10 @@ void invert_four_bytes(char *ptr)
 
 void set_keypress(void)
 {
-	struct termios new_settings;
+#ifdef WITHOUTCURSOR
+    printf("\e[?25l"); // poweroff print cursor  
+#endif
+    struct termios new_settings;
 
 	tcgetattr(0,&stored_settings);
 
@@ -416,7 +450,10 @@ void set_keypress(void)
 
 void reset_keypress(void)
 {
-	tcsetattr(0,TCSANOW,&stored_settings);
+#ifdef WITHOUTCURSOR
+    printf("\e[?25h"); // poweron cursor
+#endif
+    tcsetattr(0,TCSANOW,&stored_settings);
 	return;
 }
 

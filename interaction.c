@@ -76,7 +76,7 @@ void control_thread(struct args_keys* args)
   work_flag = 0;
 }
 
-int syncing_thread(struct args_keys* args)
+void syncing_thread(struct args_keys* args)
 {
   int sockfd = args->sockfd;
   char* ptr_direct = args->ptr_direct;
