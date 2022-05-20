@@ -514,12 +514,15 @@ char is_cross(uint32_t * ptr_car_p1, uint32_t* ptr_car_p2, char direct_p1, char 
             {
                 for(int j = -2; j<=2; j++)
                 {
-                   if(car_p1[index] == ptr_car_p2 + j + i*scr_xres)
+                  for(int indx = 0; indx < 40; indx++)
+                  {
+                   uint32_t* result = ptr_car_p2 + j + i*scr_xres;
+                   if(car_p1[indx] == result)
                    {
                      return 1;
                    }
-                   index++;
-                }
+                  }
+                 }
             }
             break;
         case DOWN:
@@ -527,11 +530,14 @@ char is_cross(uint32_t * ptr_car_p1, uint32_t* ptr_car_p2, char direct_p1, char 
             {
                 for(int j = -2; j<=2; j++)
                 {
-                   if(car_p1[index] == ptr_car_p2 + j + i*scr_xres)
+                  for(int indx = 0; indx < 40; indx++)
+                  {
+                   uint32_t* result = ptr_car_p2 + j + i*scr_xres;
+                   if(car_p1[indx] == result)
                    {
                      return 1;
                    }
-                   index++;
+                  }
                 }
             }
             break;
@@ -540,11 +546,14 @@ char is_cross(uint32_t * ptr_car_p1, uint32_t* ptr_car_p2, char direct_p1, char 
             {
                 for(int j = -2; j<=2; j++)
                 {
-                   if(car_p1[index] == ptr_car_p2 + i + j*scr_xres)
+                  for(int indx = 0; indx < 40; indx++)
+                  {
+                   uint32_t* result = ptr_car_p2 + j + i*scr_xres;
+                   if(car_p1[indx] == result)
                    {
                      return 1;
                    }
-                   index++;
+                  }
                 }
             }
             break;
@@ -553,11 +562,14 @@ char is_cross(uint32_t * ptr_car_p1, uint32_t* ptr_car_p2, char direct_p1, char 
             {
                 for(int j = -2; j<=2; j++)
                 {
-                   if(car_p1[index] == ptr_car_p2 + i + j*scr_xres)
+                  for(int indx = 0; indx < 40; indx++)
+                  {
+                   uint32_t* result = ptr_car_p2 + j + i*scr_xres;
+                   if(car_p1[indx] == result)
                    {
                      return 1;
                    }
-                   index++;
+                  }
                 }
             }
             break;
