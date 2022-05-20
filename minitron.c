@@ -15,6 +15,7 @@ void move_car(uint32_t** ptr_car, char direct, int scr_xres);
 void invert_four_bytes(char *ptr);
 void set_keypress(void);
 void reset_keypress(void);
+char is_cross(uint32_t * ptr_car_p1, uint32_t* ptr_car_p2, char direct_p1, char direct_p2, int scr_xres);
 
 int main(int argc, char* argv[])
 { 
@@ -201,12 +202,14 @@ int main(int argc, char* argv[])
 #ifndef WITHOUTCURSOR
   printf("For start press any key");
 #endif
-  start_t = tb.time;  
+  start_t = tb.time;
+  char game_start = 1;
   while(is_ready_p1 != 1 || is_ready_p2 != 1)
   {
       if(tb.time - start_t >= 10)
       {
         work_flag = 0;
+        game_start = 0;
         is_ready_p1 = 1;
         is_ready_p2 = 1;
       }
@@ -362,16 +365,15 @@ int main(int argc, char* argv[])
     usleep(62500);
    #endif
   }
-  //close all
-  if( pthread_join(tid_control, NULL) != 0 || pthread_kill(tid_syncing, 17) != 0 )
+  if(is_cross(ptr_car_p1,ptr_car_p2, direct_prev_p1, direct_prev_p2, info.xres_virtual))
   {
-    close(sockfd);
-    munmap(ptr, map_size);
-    close(fb);
-    reset_keypress();
-    fprintf(stderr, "Error of working thread\n");
-    return -1;
+    work_flag = 0;
+    who_lose[0] = 1;
+    who_lose[1] = 1;
   }
+  //close all
+  pthread_kill(tid_control, 17); 
+  pthread_kill(tid_syncing, 17);
 
   close(sockfd);
   munmap(ptr, map_size);
@@ -381,7 +383,7 @@ int main(int argc, char* argv[])
   printf("\033c\n\t*\t\t\t\t\t\t\t\t\t*\t\t*\n*\t\t\t\t*\t\t\t\t*\n\n\t*\t\t\t\t*\t\t\t\t\t\t*\n");
   if(who_lose[index_player] == 0 && who_lose[0] != who_lose[1])
     printf("\t\t\t\t\t\t\tYou win!\n");
-  else
+  else if(game_start == 1)
     printf("\t\t\t\t\t\t\tYou lose:(\n");
   return 0;
 }
@@ -457,3 +459,108 @@ void reset_keypress(void)
 	return;
 }
 
+char is_cross(uint32_t * ptr_car_p1, uint32_t* ptr_car_p2, char direct_p1, char direct_p2, int scr_xres)
+{
+    uint32_t* car_p1[40];
+    int index = 0;
+    switch (direct_p1)
+    {
+        case UP:
+            for(int i = 0; i>-8; i--)
+            {
+                for(int j = -2; j<=2; j++)
+                {
+                   car_p1[index] = ptr_car_p1 + j + i*scr_xres;
+                   index ++;
+                }
+            }
+            break;
+        case DOWN:
+            for(int i = 0; i<8; i++)
+            {
+                for(int j = -2; j<=2; j++)
+                {
+                   car_p1[index] = ptr_car_p1 + j + i*scr_xres;
+                   index ++;
+                }
+            }
+            break;
+        case LEFT:
+            for(int i = 0; i>-8; i--)
+            {
+                for(int j = -2; j<=2; j++)
+                {
+                   car_p1[index] = ptr_car_p1 + i + j*scr_xres;
+                   index ++;
+                }
+            }
+            break;
+        case RIGHT:
+            for(int i = 0; i<8; i++)
+            {
+                for(int j = -2; j<=2; j++)
+                {
+                   car_p1[index] = ptr_car_p1 + i + j*scr_xres;
+                   index ++;
+                }
+            }
+            break;
+    }  
+    index = 0;
+    switch (direct_p2)
+    {
+        case UP:
+            for(int i = 0; i>-8; i--)
+            {
+                for(int j = -2; j<=2; j++)
+                {
+                   if(car_p1[index] == ptr_car_p2 + j + i*scr_xres)
+                   {
+                     return 1;
+                   }
+                   index++;
+                }
+            }
+            break;
+        case DOWN:
+            for(int i = 0; i<8; i++)
+            {
+                for(int j = -2; j<=2; j++)
+                {
+                   if(car_p1[index] == ptr_car_p2 + j + i*scr_xres)
+                   {
+                     return 1;
+                   }
+                   index++;
+                }
+            }
+            break;
+        case LEFT:
+            for(int i = 0; i>-8; i--)
+            {
+                for(int j = -2; j<=2; j++)
+                {
+                   if(car_p1[index] == ptr_car_p2 + i + j*scr_xres)
+                   {
+                     return 1;
+                   }
+                   index++;
+                }
+            }
+            break;
+        case RIGHT:
+            for(int i = 0; i<8; i++)
+            {
+                for(int j = -2; j<=2; j++)
+                {
+                   if(car_p1[index] == ptr_car_p2 + i + j*scr_xres)
+                   {
+                     return 1;
+                   }
+                   index++;
+                }
+            }
+            break;
+    }
+    return 0;
+}

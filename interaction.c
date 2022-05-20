@@ -56,10 +56,12 @@ void control_thread(struct args_keys* args)
   *(args->ptr_is_ready_player) = 1;
   sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
 
+  direction = 0;
   //wait start game
   while( start_flag != 1 )
   {
       usleep(1);
+      sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
   }
 
   while( direction != 'q' && work_flag )
