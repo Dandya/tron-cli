@@ -548,7 +548,7 @@ char is_cross(uint32_t * ptr_car_p1, uint32_t* ptr_car_p2, char direct_p1, char 
                 {
                   for(int indx = 0; indx < 40; indx++)
                   {
-                   uint32_t* result = ptr_car_p2 + j + i*scr_xres;
+                   uint32_t* result = ptr_car_p2 + i + j*scr_xres;
                    if(car_p1[indx] == result)
                    {
                      return 1;
@@ -564,7 +564,7 @@ char is_cross(uint32_t * ptr_car_p1, uint32_t* ptr_car_p2, char direct_p1, char 
                 {
                   for(int indx = 0; indx < 40; indx++)
                   {
-                   uint32_t* result = ptr_car_p2 + j + i*scr_xres;
+                   uint32_t* result = ptr_car_p2 + i + j*scr_xres;
                    if(car_p1[indx] == result)
                    {
                      return 1;
