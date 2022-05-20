@@ -99,8 +99,11 @@ void syncing_thread(struct args_keys* args)
   while(work_flag)
   {
     recvfrom(sockfd, &direction, 1, 0, ptr_p2_addr, &len_sockaddr);
-    pthread_mutex_lock(ptr_mtx);
-    *ptr_direct = direction;
-    pthread_mutex_unlock(ptr_mtx);
+    if(direction == UP || direction == DOWN || direction == LEFT || direction == RIGHT)
+    {
+      pthread_mutex_lock(ptr_mtx);
+      *ptr_direct = direction; 
+      pthread_mutex_unlock(ptr_mtx);
+    }
   }
 }
