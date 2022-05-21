@@ -1,6 +1,5 @@
 extern int work_flag;
 extern int start_flag;
-extern int now_step;
 extern int need_answer;
 extern char number_step;
 

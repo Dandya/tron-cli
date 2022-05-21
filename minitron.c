@@ -8,7 +8,6 @@
 
 int work_flag = 1;
 int start_flag = 0;
-int now_step = 0;
 int need_answer = 0;
 char number_step = 0;
 static struct termios stored_settings;
