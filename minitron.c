@@ -8,10 +8,14 @@
 
 int work_flag = 1;
 int start_flag = 0;
+int now_step = 0;
+int need_answer = 0;
+char number_step = 0;
 static struct termios stored_settings;
 
 void handler(int none);
 void move_car(uint32_t** ptr_car, char direct, int scr_xres);
+char set_opposite_direct(char direct, char direct_prev, char* ptr_opposite_direct);
 void invert_four_bytes(char *ptr);
 void set_keypress(void);
 void reset_keypress(void);
@@ -19,11 +23,14 @@ char is_cross(uint32_t * ptr_car_p1, uint32_t* ptr_car_p2, char direct_p1, char 
 
 int main(int argc, char* argv[])
 { 
+  int mode_sync = 0; // 0 - not syncihg, 1 - syncing
   if(argc < 4)
   {
-      printf("Use: ./minitron.exe <xres> <yres> <opponent's ip>\n");
+      printf("Use: ./minitron.exe <xres> <yres> <opponent's ip> <0-nsync, 1-sync>\n");
       return -1;
   }
+  else if(argc == 5)
+      mode_sync = atoi(argv[4]);
 
   //init screen
   printf("\033c"); //clear stdout
@@ -146,15 +153,32 @@ int main(int argc, char* argv[])
   char direct_p2= LEFT;
   char direct_prev_p1 = RIGHT;
   char direct_prev_p2 = LEFT;
-  char is_need_additional_pixel = 0;
+  char opposite_direct_p1;
+  char opposite_direct_p2;
+  char is_need_additional_pixel_p1 = 0;
+  char is_need_additional_pixel_p2 = 0;
   char who_lose[] = {0,0};  //who_lose[0] - first player 
   char index_player = 0;    //who_lose[1] - second player
-  char is_ready_p1 = 0;
+  char is_ready_p1 = 0;     //if index_player == 0 then player is master else slave
   char is_ready_p2 = 0;
+  char tmp;
 
   struct args_keys args1 = {sockfd, &direct_p1, &is_ready_p1, &opponent_addr, &mutex};
   struct args_keys args2 = {sockfd, &direct_p2, &is_ready_p2, &opponent_addr, &mutex};  
-  
+  void (*control_thread) (struct args_keys* args);
+  void (*syncing_thread) (struct args_keys* args);
+  if (mode_sync == 1)
+  {
+      control_thread = control_thread_sync;
+      syncing_thread = interaction_thread_sync;
+  }
+  else
+  {
+      control_thread = control_thread_nsync;
+      syncing_thread = interaction_thread_nsync;
+
+  }
+
   //invert bytes for compliance ips
   char opponent_ip[sizeof(unsigned long)];
   char player_ip[sizeof(unsigned long)];
@@ -228,54 +252,61 @@ int main(int argc, char* argv[])
   uint32_t background_color = ptr_car_p2[0];
   draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
   draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual);
-  char opposite_direct;
   draw_area(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
           yres_area, info.xres_virtual);
  
   while(work_flag)
   {
-    pthread_mutex_lock(&mutex);
-    // move first player's car 
-    switch(direct_p1)
+    if(mode_sync == 1) //with sync
     {
-      case UP:
-      {
-        opposite_direct = DOWN;
-        if( direct_prev_p1 == LEFT || direct_prev_p1 == RIGHT )
-            is_need_additional_pixel = 1;
-        break;
-      }
-      case DOWN:
-      {
-        opposite_direct = UP;  
-        if( direct_prev_p1 == LEFT || direct_prev_p1 == RIGHT )
-            is_need_additional_pixel = 1;
-        break;
-      }
-      case LEFT:
-      {
-        opposite_direct = RIGHT;  
-        if( direct_prev_p1 == UP || direct_prev_p1 == DOWN )
-            is_need_additional_pixel = 1;
-        break;
-      }
-      case RIGHT:
-      {
-        opposite_direct = LEFT;  
-        if( direct_prev_p1 == DOWN || direct_prev_p1 == DOWN )
-            is_need_additional_pixel = 1;
-        break;
-      }
+        if(index_player == 0) //player is master
+        {
+            pthread_mutex_lock(&mutex);
+            is_need_additional_pixel_p1 = set_opposite_direct(direct_p1, direct_prev_p1, &opposite_direct_p1);
+            need_answer = 1;
+            if(direct_prev_p1 != opposite_direct_p1)
+                tmp = direct_p1 + number_step % 2;
+            else
+                tmp = direct_prev_p1 + number_step % 2;
+            while(need_answer)
+            {
+                sendto(sockfd, &tmp, 1, 0, &opponent_addr, sizeof(opponent_addr));
+                usleep(50);
+            }
+            is_need_additional_pixel_p2 = set_opposite_direct(direct_p2, direct_prev_p2, &opposite_direct_p2);
+        }
+        else
+        {
+            need_answer = 1;
+            while(need_answer)
+                usleep(5);
+            pthread_mutex_lock(&mutex);
+            is_need_additional_pixel_p2 = set_opposite_direct(direct_p2, direct_prev_p2, &opposite_direct_p2);
+            if(direct_prev_p1 != opposite_direct_p1)
+                tmp = direct_p2 + number_step % 2;
+            else
+                tmp = direct_prev_p2 + number_step % 2;
+            for(int i = 0; i<10; i++)
+                sendto(sockfd, &tmp, 1, 0, &opponent_addr, sizeof(opponent_addr));
+            is_need_additional_pixel_p1 = set_opposite_direct(direct_p1, direct_prev_p1, &opposite_direct_p1);
+        }
     }
-    if(direct_prev_p1 != opposite_direct)
+    else //without sync
+    {
+        pthread_mutex_lock(&mutex);
+        is_need_additional_pixel_p1 = set_opposite_direct(direct_p1, direct_prev_p1, &opposite_direct_p1);
+        is_need_additional_pixel_p2 = set_opposite_direct(direct_p2, direct_prev_p2, &opposite_direct_p2);
+    }
+    // move first player's car 
+    if(direct_prev_p1 != opposite_direct_p1)
     {
       delete_car(ptr_car_p1, direct_prev_p1, info.xres_virtual, background_color);
       *ptr_car_p1 = RED;
-      if(is_need_additional_pixel)
+      if(is_need_additional_pixel_p1)
       {
         move_car(&ptr_car_p1, direct_p1, info.xres_virtual);
         *ptr_car_p1 = RED;
-        is_need_additional_pixel = 0;
+        is_need_additional_pixel_p1 = 0;
       }
       move_car(&ptr_car_p1, direct_p1, info.xres_virtual);
       if(draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual))
@@ -297,46 +328,15 @@ int main(int argc, char* argv[])
       }
     }
     // move second player's car
-    switch(direct_p2)
-    {
-      case UP:
-      {
-        opposite_direct = DOWN;
-        if( direct_prev_p2 == LEFT || direct_prev_p2 == RIGHT )
-            is_need_additional_pixel = 1;
-        break;
-      }
-      case DOWN:
-      {
-        opposite_direct = UP;
-        if( direct_prev_p2 == LEFT || direct_prev_p2 == RIGHT )
-            is_need_additional_pixel = 1;
-        break;
-      }
-      case LEFT:
-      {
-        opposite_direct = RIGHT;
-        if( direct_prev_p2 == UP || direct_prev_p2 == DOWN )
-            is_need_additional_pixel = 1;
-        break;
-      }
-      case RIGHT:
-      {
-        opposite_direct = LEFT;
-        if( direct_prev_p2 == UP || direct_prev_p2 == DOWN )
-            is_need_additional_pixel = 1;
-        break;
-      }
-    }
-    if(direct_prev_p2 != opposite_direct)
+    if(direct_prev_p2 != opposite_direct_p2)
     {
       delete_car(ptr_car_p2, direct_prev_p2, info.xres_virtual, background_color);
       *ptr_car_p2 = BLUE;
-      if(is_need_additional_pixel)
+      if(is_need_additional_pixel_p2)
       {
         move_car(&ptr_car_p2, direct_p2, info.xres_virtual);
         *ptr_car_p2 = BLUE;
-        is_need_additional_pixel = 0;
+        is_need_additional_pixel_p2 = 0;
       }
       move_car(&ptr_car_p2, direct_p2, info.xres_virtual);
       if(draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual))
@@ -357,14 +357,21 @@ int main(int argc, char* argv[])
         who_lose[1] = 1;
       }
     }
-    pthread_mutex_unlock(&mutex);    
-   #if CLOCK_PER_SEC == 1000000
-    usleep(62500 - clock() + start_c); // clock() returns microsecs
-    start_c = clock();
-   #else
-    usleep(62500);
-   #endif
+    pthread_mutex_unlock(&mutex);
+    if(mode_sync == 1 && index_player == 0 || mode_sync == 0)
+    {
+      #if CLOCK_PER_SEC == 1000000
+      usleep(62500 - clock() + start_c); // clock() returns microsecs
+      start_c = clock();
+      #else
+      usleep(62500);
+      #endif
+    }
+    else
+        usleep(30000);
+    number_step++;
   }
+  
   if(is_cross(ptr_car_p1,ptr_car_p2, direct_prev_p1, direct_prev_p2, info.xres_virtual))
   {
     work_flag = 0;
@@ -418,6 +425,46 @@ void move_car(uint32_t** ptr_car, char direct, int scr_xres)
         break;
       }
   }
+}
+
+char set_opposite_direct(char direct, char direct_prev, char* ptr_opposite_direct)
+{
+    switch(direct)
+    {
+      case UP:
+      {
+        *ptr_opposite_direct = DOWN;
+        if( direct_prev == LEFT || direct_prev == RIGHT )
+            return 1;
+        else
+            return 0;
+      }
+      case DOWN:
+      {
+        *ptr_opposite_direct = UP;  
+        if( direct_prev == LEFT || direct_prev == RIGHT )
+            return 1;
+        else 
+            return 0;
+        break;
+      }
+      case LEFT:
+      {
+        *ptr_opposite_direct = RIGHT;  
+        if( direct_prev == UP || direct_prev == DOWN )
+            return 1;
+        else 
+            return 0;
+      }
+      case RIGHT:
+      {
+        *ptr_opposite_direct = LEFT;  
+        if( direct_prev == DOWN || direct_prev == DOWN )
+            return 1;
+        else 
+            return 0;
+      }
+    }
 }
 
 void invert_four_bytes(char *ptr)
