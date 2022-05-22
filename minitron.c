@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
     munmap(ptr, map_size);
     close(fb);
     reset_keypress();
-    printf("Big size of area");
+    printf("Not supported size of area");
     return __LINE__;
   }
 
@@ -219,9 +219,6 @@ int main(int argc, char* argv[])
   // wait
   struct timeb tb; 
   time_t start_t; 
- #if CLOCK_PER_SEC == 1000000
-  clock_t start_c;
- #endif
 
   ftime(&tb);
 #ifndef WITHOUTCURSOR
@@ -247,9 +244,6 @@ int main(int argc, char* argv[])
   start_flag = 1;
 
   // start game 
-//  #if CLOCK_PER_SEC == 1000000
-//   start_c = clock();
-//  #endif
   ftime(&tb);
   unsigned start_m = tb.millitm;
   uint32_t background_color = ptr_car_p2[0];
@@ -269,11 +263,11 @@ int main(int argc, char* argv[])
             need_answer = 1;
             if(direct_prev_p1 != opposite_direct_p1)
                 tmp = direct_p1 + number_step % 2;
-            else
+            else //player is slave
                 tmp = direct_prev_p1 + number_step % 2;
             while(need_answer)
             {
-                sendto(sockfd, &tmp, 1, 0, &opponent_addr, sizeof(opponent_addr));
+                sendto(sockfd, &tmp, 1, 0,(struct sockaddr*)(&opponent_addr), sizeof(opponent_addr));
                 usleep(50);
             }
             is_need_additional_pixel_p2 = set_opposite_direct(direct_p2, direct_prev_p2, &opposite_direct_p2);
@@ -290,7 +284,7 @@ int main(int argc, char* argv[])
             else
                 tmp = direct_prev_p2 + number_step % 2;
             for(int i = 0; i<10; i++)
-                sendto(sockfd, &tmp, 1, 0, &opponent_addr, sizeof(opponent_addr));
+                sendto(sockfd, &tmp, 1, 0, (struct sockaddr*)(&opponent_addr), sizeof(opponent_addr));
             is_need_additional_pixel_p1 = set_opposite_direct(direct_p1, direct_prev_p1, &opposite_direct_p1);
         }
     }
@@ -363,14 +357,10 @@ int main(int argc, char* argv[])
     pthread_mutex_unlock(&mutex);
     if(mode_sync == 1 && index_player == 0 || mode_sync == 0)
     {
-//       #if CLOCK_PER_SEC == 1000000
       ftime(&tb);
-      usleep(62500 + (tb.millitm >= start_m) ? (tb.millitm - start_m)*1000 : (tb.millitm + 1000 - start_m)); // clock() returns microsecs
+      usleep(62500 - (((unsigned)(tb.millitm  - start_m) < 10 ) ? (tb.millitm - start_m)*1000 : 7500)); 
       ftime(&tb);
       start_t = tb.millitm;
-//       #else
-//       usleep(62500);
-//       #endif
     }
     else
         usleep(30000);
