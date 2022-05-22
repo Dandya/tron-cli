@@ -74,9 +74,11 @@ int main(int argc, char* argv[])
   int xres_area = atoi(argv[1]);
   int yres_area = atoi(argv[2]);
 #ifdef WITHOUTCURSOR
-  if(xres_area + 2 > info.xres || yres_area + 2 > info.yres) //considering the boundaries 
+  if(xres_area + 2 > info.xres || yres_area + 2 > info.yres 
+          || xres_area <= 10 || yres_area <= 10) //considering the boundaries 
 #else 
-  if(xres_area + 2 > info.xres || yres_area + 2 > info.yres-32) //considering the boundaries and first line
+  if(xres_area + 2 > info.xres || yres_area + 2 > info.yres-32
+          || xres_area <= 10 || yres_area <= 10) //considering the boundaries and first line
 #endif
   {
     munmap(ptr, map_size);
@@ -214,7 +216,7 @@ int main(int argc, char* argv[])
     fprintf(stderr, "Error of create thread\n");
     return 2;
   }
-  
+  // wait
   struct timeb tb; 
   time_t start_t; 
  #if CLOCK_PER_SEC == 1000000
@@ -245,9 +247,11 @@ int main(int argc, char* argv[])
   start_flag = 1;
 
   // start game 
- #if CLOCK_PER_SEC == 1000000
-  start_c = clock();
- #endif
+//  #if CLOCK_PER_SEC == 1000000
+//   start_c = clock();
+//  #endif
+  ftime(&tb);
+  unsigned start_m = tb.millitm;
   uint32_t background_color = ptr_car_p2[0];
   draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
   draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual);
@@ -359,12 +363,14 @@ int main(int argc, char* argv[])
     pthread_mutex_unlock(&mutex);
     if(mode_sync == 1 && index_player == 0 || mode_sync == 0)
     {
-      #if CLOCK_PER_SEC == 1000000
-      usleep(62500 - clock() + start_c); // clock() returns microsecs
-      start_c = clock();
-      #else
-      usleep(62500);
-      #endif
+//       #if CLOCK_PER_SEC == 1000000
+      ftime(&tb);
+      usleep(62500 + (tb.millitm >= start_m) ? (tb.millitm - start_m)*1000 : (tb.millitm + 1000 - start_m)); // clock() returns microsecs
+      ftime(&tb);
+      start_t = tb.millitm;
+//       #else
+//       usleep(62500);
+//       #endif
     }
     else
         usleep(30000);
