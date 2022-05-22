@@ -12,7 +12,6 @@ int need_answer = 0;
 char number_step = 0;
 static struct termios stored_settings;
 
-void handler(int none);
 void move_car(uint32_t** ptr_car, char direct, int scr_xres);
 char set_opposite_direct(char direct, char direct_prev, char* ptr_opposite_direct);
 void invert_four_bytes(char *ptr);
@@ -39,8 +38,6 @@ int main(int argc, char* argv[])
   struct fb_var_screeninfo info;
   size_t fb_size, map_size, page_size;
   uint32_t *ptr;
-
-  signal(SIGINT, handler);
   
   page_size = sysconf(_SC_PAGESIZE);
   
@@ -382,17 +379,13 @@ int main(int argc, char* argv[])
   close(fb);
   reset_keypress();
   //print result of game
-  printf("\033c\n\t*\t\t\t\t\t\t\t\t\t*\t\t*\n*\t\t\t\t*\t\t\t\t*\n\n\t*\t\t\t\t*\t\t\t\t\t\t*\n");
+  fflush(stdout);
+  fprintf(stdout,"\033c\n\t*\t\t\t\t\t\t\t\t\t*\t\t*\n*\t\t\t\t*\t\t\t\t*\n\n\t*\t\t\t\t*\t\t\t\t\t\t*\n");
   if(who_lose[index_player] == 0 && who_lose[0] != who_lose[1])
-    printf("\t\t\t\t\t\t\tYou win!\n");
+    fprintf(stdout,"\t\t\t\t\t\t\tYou win!\n");
   else if(game_start == 1)
-    printf("\t\t\t\t\t\t\tYou lose:(\n");
+    fprintf(stdout,"\t\t\t\t\t\t\tYou lose:(\n");
   return 0;
-}
-
-void handler(int none)
-{
-  work_flag = 0;
 }
 
 void move_car(uint32_t** ptr_car, char direct, int scr_xres)
