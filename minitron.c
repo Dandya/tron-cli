@@ -21,7 +21,7 @@ char is_cross(uint32_t * ptr_car_p1, uint32_t* ptr_car_p2, char direct_p1, char 
 
 int main(int argc, char* argv[])
 { 
-  int mode_sync = 0; // 0 - not syncihg, 1 - syncing
+  int mode_sync = 0; // 0 - not syncing, 1 - syncing
   if(argc < 4)
   {
       printf("Use: ./minitron.exe <xres> <yres> <opponent's ip> <0-nsync, 1-sync>\n");
@@ -165,7 +165,7 @@ int main(int argc, char* argv[])
   struct args_keys args2 = {sockfd, &direct_p2, &is_ready_p2, &opponent_addr, &mutex};  
   void (*control_thread) (struct args_keys* args);
   void (*syncing_thread) (struct args_keys* args);
-  if (mode_sync == 1)
+  if (mode_sync)
   {
       control_thread = control_thread_sync;
       syncing_thread = interaction_thread_sync;
@@ -213,6 +213,7 @@ int main(int argc, char* argv[])
     fprintf(stderr, "Error of create thread\n");
     return 2;
   }
+
   // wait
   struct timeb tb; 
   time_t start_t; 
@@ -251,7 +252,7 @@ int main(int argc, char* argv[])
  
   while(work_flag)
   {
-    if(mode_sync == 1) //with sync
+    if(mode_sync) //with sync
     {
         if(index_player == 0) //player is master
         {
@@ -352,7 +353,7 @@ int main(int argc, char* argv[])
       }
     }
     pthread_mutex_unlock(&mutex);
-    if(mode_sync == 1 && index_player == 0 || mode_sync == 0)
+    if(mode_sync && index_player == 0 || mode_sync == 0)
     {
       ftime(&tb);
       usleep(62500 - (((unsigned)(tb.millitm  - start_m) < 10 ) ? (tb.millitm - start_m)*1000 : 7500)); 
@@ -360,7 +361,7 @@ int main(int argc, char* argv[])
       start_t = tb.millitm;
     }
     else
-        usleep(30000);
+        usleep(20000);
     number_step++;
   }
   
