@@ -30,6 +30,7 @@
 #define RED 0x00FF0000
 #define BLUE 0x000000FF
 #define WHITE 0x00FFFFFF
+#define VIOLET 0xFF00FF
 
 #include "interaction.c"
 #include "draw.c"

@@ -356,7 +356,7 @@ int main(int argc, char* argv[])
     if(mode_sync && index_player == 0 || mode_sync == 0)
     {
       ftime(&tb);
-      usleep(62500 - (((unsigned)(tb.millitm  - start_m) < 10 ) ? (tb.millitm - start_m)*1000 : 7500)); 
+      usleep(62500 - (((unsigned)(tb.millitm  - start_m) < 10 ) ? (tb.millitm - start_m)*1000 : 5500)); 
       ftime(&tb);
       start_t = tb.millitm;
     }
@@ -371,6 +371,34 @@ int main(int argc, char* argv[])
     who_lose[0] = 1;
     who_lose[1] = 1;
   }
+
+  //print result of game
+  if(who_lose[index_player] == 0 && who_lose[0] != who_lose[1])
+  {
+      if(index_player == 0)
+        draw_area_in_color(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
+            yres_area, info.xres_virtual, RED);
+      else
+        draw_area_in_color(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
+            yres_area, info.xres_virtual, BLUE);
+  }
+      //fprintf(stdout,"\t\t\t\t\t\t\tYou win!\n");
+  else if(game_start == 1)
+  {
+      if(who_lose[index_player] == 1 && who_lose[0] != who_lose[1])
+      {
+        if(index_player == 0)
+          draw_area_in_color(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
+                yres_area, info.xres_virtual, BLUE);
+        else
+            draw_area_in_color(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
+                yres_area, info.xres_virtual, RED);
+      }
+      else
+          draw_area_in_color(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
+                yres_area, info.xres_virtual, VIOLET);
+  }
+
   //close all
   pthread_kill(tid_control, 17); 
   pthread_kill(tid_syncing, 17);
@@ -379,13 +407,7 @@ int main(int argc, char* argv[])
   munmap(ptr, map_size);
   close(fb);
   reset_keypress();
-  //print result of game
-  fflush(stdout);
-  fprintf(stdout,"\033c\n\t*\t\t\t\t\t\t\t\t\t*\t\t*\n*\t\t\t\t*\t\t\t\t*\n\n\t*\t\t\t\t*\t\t\t\t\t\t*\n");
-  if(who_lose[index_player] == 0 && who_lose[0] != who_lose[1])
-    fprintf(stdout,"\t\t\t\t\t\t\tYou win!\n");
-  else if(game_start == 1)
-    fprintf(stdout,"\t\t\t\t\t\t\tYou lose:(\n");
+ // fprintf(stdout,"\033c\n\t*\t\t\t\t\t\t\t\t\t*\t\t*\n*\t\t\t\t*\t\t\t\t*\n\n\t*\t\t\t\t*\t\t\t\t\t\t*\n");
   return 0;
 }
 
