@@ -55,9 +55,13 @@ void control_thread_nsync(struct args_keys* args)
   char direction;
   
   direction = getchar();
+  if(direction == 'q')
+  {
+      work_flag = 0;
+      return 0;
+  }
   *(args->ptr_is_ready_player) = 1;
   sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
-
   direction = 0;
   //wait start game
   while( start_flag != 1 )
@@ -119,10 +123,14 @@ void control_thread_sync(struct args_keys* args)
   int len_sockaddr = sizeof(*ptr_p2_addr);
   char direction = 0;
   
-  getchar();
+  direction = getchar();
+  if(direction == 'q')
+  {
+      work_flag = 0;
+      return 0;
+  }
   *(args->ptr_is_ready_player) = 1;
   sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
-
   direction = 0;
   //wait start game
   while( start_flag != 1 )

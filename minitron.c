@@ -12,6 +12,7 @@ int need_answer = 0;
 char number_step = 0;
 static struct termios stored_settings;
 
+void handler(int none);
 void move_car(uint32_t** ptr_car, char direct, int scr_xres);
 char set_opposite_direct(char direct, char direct_prev, char* ptr_opposite_direct);
 void invert_four_bytes(char *ptr);
@@ -30,6 +31,7 @@ int main(int argc, char* argv[])
   else if(argc == 5)
       mode_sync = atoi(argv[4]);
 
+  signal(SIGINT, handler);
   //init screen
   printf("\033c"); //clear stdout
   set_keypress(); // set noecho and cbreak modes stdin
@@ -159,7 +161,7 @@ int main(int argc, char* argv[])
   char index_player = 0;    //who_lose[1] - second player
   char is_ready_p1 = 0;     //if index_player == 0 then player is master else slave
   char is_ready_p2 = 0;
-  char tmp;
+  char tmp = 0;
 
   struct args_keys args1 = {sockfd, &direct_p1, &is_ready_p1, &opponent_addr, &mutex};
   struct args_keys args2 = {sockfd, &direct_p2, &is_ready_p2, &opponent_addr, &mutex};  
@@ -215,40 +217,32 @@ int main(int argc, char* argv[])
   }
 
   // wait
-  struct timeb tb; 
-  time_t start_t; 
-
-  ftime(&tb);
 #ifndef WITHOUTCURSOR
-  printf("For start press any key");
+  printf("For start press key(q - quit)");
 #endif
-  start_t = tb.time;
   char game_start = 1;
-  while(is_ready_p1 != 1 || is_ready_p2 != 1)
+  while((is_ready_p1 != 1 || is_ready_p2 != 1) && work_flag == 1)
   {
-      if(tb.time - start_t >= 10)
-      {
-        work_flag = 0;
-        game_start = 0;
-        is_ready_p1 = 1;
-        is_ready_p2 = 1;
-      }
-      else
-      {
-        usleep(1);
-        ftime(&tb);
-      }
+    usleep(1);
+  }
+  if(work_flag == 0)
+  {
+    game_start = 0;
   }
   start_flag = 1;
 
   // start game 
+  struct timeb tb;  
   ftime(&tb);
   unsigned start_m = tb.millitm;
   uint32_t background_color = ptr_car_p2[0];
-  draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
-  draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual);
-  draw_area(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
-          yres_area, info.xres_virtual);
+  if(game_start == 1)
+  {
+    draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
+    draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual);
+    draw_area(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
+            yres_area, info.xres_virtual);
+  }
  
   while(work_flag)
   {
@@ -274,7 +268,10 @@ int main(int argc, char* argv[])
         {
             need_answer = 1;
             while(need_answer)
-                usleep(5);
+            {
+                sendto(sockfd, &tmp, 1, 0, (struct sockaddr*)(&opponent_addr), sizeof(opponent_addr));
+                usleep(1); 
+            }
             pthread_mutex_lock(&mutex);
             is_need_additional_pixel_p2 = set_opposite_direct(direct_p2, direct_prev_p2, &opposite_direct_p2);
             if(direct_prev_p1 != opposite_direct_p1)
@@ -355,10 +352,15 @@ int main(int argc, char* argv[])
     pthread_mutex_unlock(&mutex);
     if(mode_sync && index_player == 0 || mode_sync == 0)
     {
-      ftime(&tb);
-      usleep(62500 - (((unsigned)(tb.millitm  - start_m) < 10 ) ? (tb.millitm - start_m)*1000 : 5500)); 
-      ftime(&tb);
-      start_t = tb.millitm;
+      if(mode_sync)
+      {
+        ftime(&tb);
+        usleep(62500 - (((unsigned)(tb.millitm  - start_m) < 10 ) ? (tb.millitm - start_m)*1000 : 5500)); 
+        ftime(&tb);
+        start_m = tb.millitm;
+      }
+      else
+          usleep(62500);
     }
     else
         usleep(20000);
@@ -400,17 +402,19 @@ int main(int argc, char* argv[])
   }
 
   //close all
-  pthread_kill(tid_control, 17); 
+  pthread_join(tid_control, NULL); 
   pthread_kill(tid_syncing, 17);
-
   close(sockfd);
   munmap(ptr, map_size);
   close(fb);
   reset_keypress();
- // fprintf(stdout,"\033c\n\t*\t\t\t\t\t\t\t\t\t*\t\t*\n*\t\t\t\t*\t\t\t\t*\n\n\t*\t\t\t\t*\t\t\t\t\t\t*\n");
   return 0;
 }
 
+void handler(int none)
+{
+    exit(0);
+}
 void move_car(uint32_t** ptr_car, char direct, int scr_xres)
 {
   switch(direct)
