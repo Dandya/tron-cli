@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
   }
 
   //init threads
-  pthread_t tid_control, tid_syncing;
+  pthread_t tid_control, tid_syncing, tid_send;
   pthread_attr_t attr;
   pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   
@@ -196,7 +196,18 @@ int main(int argc, char* argv[])
       index_player = 1;
   }
   
+
   if( pthread_create(&tid_control, &attr,(void *)control_thread, &args1) != 0 )
+  {
+    close(sockfd);
+    munmap(ptr, map_size);
+    close(fb);
+    reset_keypress();
+    fprintf(stderr, "Error of create thread\n");
+    return 2;
+  }
+
+  if( pthread_create(&tid_send, &attr,(void *)send_to_opponent, &args1) != 0 )
   {
     close(sockfd);
     munmap(ptr, map_size);
@@ -235,13 +246,18 @@ int main(int argc, char* argv[])
   struct timeb tb;  
   ftime(&tb);
   unsigned start_m = tb.millitm;
+  time_t start_s = tb.time; // seconds
   uint32_t background_color = ptr_car_p2[0];
   if(game_start == 1)
   {
-    draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
-    draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual);
+    pthread_mutex_lock(&mutex);
+    direct_p1 = RIGHT;
+    direct_p2 = LEFT;
     draw_area(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
             yres_area, info.xres_virtual);
+    draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
+    draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual);
+    pthread_mutex_unlock(&mutex);
   }
  
   while(work_flag)
@@ -255,24 +271,46 @@ int main(int argc, char* argv[])
             need_answer = 1;
             if(direct_prev_p1 != opposite_direct_p1)
                 tmp = direct_p1 + number_step % 2;
-            else //player is slave
+            else 
                 tmp = direct_prev_p1 + number_step % 2;
             while(need_answer)
             {
                 sendto(sockfd, &tmp, 1, 0,(struct sockaddr*)(&opponent_addr), sizeof(opponent_addr));
+                ftime(&tb);
+                if(tb.time - start_s > 5)
+                {
+                    need_answer = 0;
+                    work_flag = 0;
+                }
                 usleep(50);
+            }
+            if(work_flag == 0)
+            {
+                pthread_mutex_unlock(&mutex);
+                continue;
             }
             is_need_additional_pixel_p2 = set_opposite_direct(direct_p2, direct_prev_p2, &opposite_direct_p2);
         }
-        else
+        else //player is slave
         {
             need_answer = 1;
             while(need_answer)
             {
                 sendto(sockfd, &tmp, 1, 0, (struct sockaddr*)(&opponent_addr), sizeof(opponent_addr));
+                ftime(&tb);
+                if(tb.time - start_s > 5)
+                {
+                    need_answer = 0;
+                    work_flag = 0;
+                }
                 usleep(1); 
             }
             pthread_mutex_lock(&mutex);
+            if(work_flag == 0)
+            {
+                pthread_mutex_unlock(&mutex);
+                continue;
+            }
             is_need_additional_pixel_p2 = set_opposite_direct(direct_p2, direct_prev_p2, &opposite_direct_p2);
             if(direct_prev_p1 != opposite_direct_p1)
                 tmp = direct_p2 + number_step % 2;
@@ -352,18 +390,22 @@ int main(int argc, char* argv[])
     pthread_mutex_unlock(&mutex);
     if(mode_sync && index_player == 0 || mode_sync == 0)
     {
-      if(mode_sync)
+      if(mode_sync) //player is master
       {
         ftime(&tb);
         usleep(62500 - (((unsigned)(tb.millitm  - start_m) < 10 ) ? (tb.millitm - start_m)*1000 : 5500)); 
         ftime(&tb);
         start_m = tb.millitm;
+        start_s = tb.time;
       }
-      else
+      else // nsync mode
           usleep(62500);
     }
-    else
+    else //player is slave
+    {
         usleep(20000);
+        start_s = tb.time;
+    }
     number_step++;
   }
   
@@ -402,7 +444,8 @@ int main(int argc, char* argv[])
   }
 
   //close all
-  pthread_join(tid_control, NULL); 
+  pthread_join(tid_control, NULL);
+  pthread_join(tid_send, NULL);
   pthread_kill(tid_syncing, 17);
   close(sockfd);
   munmap(ptr, map_size);

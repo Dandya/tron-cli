@@ -52,28 +52,17 @@ void control_thread_nsync(struct args_keys* args)
   pthread_mutex_t* ptr_mtx = args->ptr_mtx;
   struct sockaddr* ptr_p2_addr = (struct sockaddr*)args->ptr_p2_addr;
   int len_sockaddr = sizeof(*ptr_p2_addr);
-  char direction;
-  
-  direction = getchar();
-  if(direction == 'q')
-  {
-      work_flag = 0;
-      return 0;
-  }
-  *(args->ptr_is_ready_player) = 1;
-  sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
-  direction = 0;
-  //wait start game
-  while( start_flag != 1 )
+  char direction = 0;
+  while(*(args->ptr_is_ready_player) != 1)
   {
       usleep(1);
-      sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
   }
 
   while( direction != 'q' && work_flag )
   {
     direction = getchar();
-    if(direction == UP || direction == DOWN || direction == LEFT || direction == RIGHT)
+    if((direction == UP || direction == DOWN 
+                || direction == LEFT || direction == RIGHT) && start_flag)
     {
       pthread_mutex_lock(ptr_mtx);
       *ptr_direct = direction; 
@@ -122,27 +111,16 @@ void control_thread_sync(struct args_keys* args)
   struct sockaddr* ptr_p2_addr = (struct sockaddr*)args->ptr_p2_addr;
   int len_sockaddr = sizeof(*ptr_p2_addr);
   char direction = 0;
-  
-  direction = getchar();
-  if(direction == 'q')
-  {
-      work_flag = 0;
-      return 0;
-  }
-  *(args->ptr_is_ready_player) = 1;
-  sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
-  direction = 0;
-  //wait start game
-  while( start_flag != 1 )
+  while(*(args->ptr_is_ready_player) != 1)
   {
       usleep(1);
-      sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
   }
 
   while( direction != 'q' && work_flag )
   {
     direction = getchar();
-    if(direction == UP || direction == DOWN || direction == LEFT || direction == RIGHT)
+    if((direction == UP || direction == DOWN 
+                || direction == LEFT || direction == RIGHT) && start_flag)
     {
       pthread_mutex_lock(ptr_mtx);
       *ptr_direct = direction; 
@@ -180,5 +158,28 @@ void interaction_thread_sync(struct args_keys* args)
       *ptr_direct = direction;
       need_answer = 0;
     }
+  }
+}
+
+void send_to_opponent(struct args_keys* args)
+{
+  int sockfd = args->sockfd;
+  struct sockaddr* ptr_p2_addr = (struct sockaddr*)args->ptr_p2_addr;
+  int len_sockaddr = sizeof(*ptr_p2_addr);
+  char direction = 0;
+  
+  direction = getchar();
+  if(direction == 'q')
+  {
+      work_flag = 0;
+      exit(0);
+  }
+  direction = 0;
+  *(args->ptr_is_ready_player) = 1;
+  sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
+  //wait start game
+  while(start_flag != 1)
+  {
+      sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
   }
 }
