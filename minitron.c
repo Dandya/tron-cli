@@ -149,8 +149,8 @@ int main(int argc, char* argv[])
   uint32_t* ptr_car_p1 = ptr + info.xres/2 - xres_area/2 + 1 + info.xres_virtual*(info.yres/2 - yres_area/2 + 3);
   uint32_t* ptr_car_p2 = ptr + info.xres/2 - xres_area/2 + xres_area + 
       info.xres_virtual*(info.yres/2 -yres_area/2 + yres_area-2);
-  char direct_p1 = RIGHT;
-  char direct_p2= LEFT;
+  char direct_p1;
+  char direct_p2;
   char direct_prev_p1 = RIGHT;
   char direct_prev_p2 = LEFT;
   char opposite_direct_p1;
@@ -426,7 +426,6 @@ int main(int argc, char* argv[])
         draw_area_in_color(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
             yres_area, info.xres_virtual, BLUE);
   }
-      //fprintf(stdout,"\t\t\t\t\t\t\tYou win!\n");
   else if(game_start == 1)
   {
       if(who_lose[index_player] == 1 && who_lose[0] != who_lose[1])

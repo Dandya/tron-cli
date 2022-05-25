@@ -172,7 +172,8 @@ void send_to_opponent(struct args_keys* args)
   if(direction == 'q')
   {
       work_flag = 0;
-      exit(0);
+      *(args->ptr_is_ready_player) = 1;
+      return 0;
   }
   direction = 0;
   *(args->ptr_is_ready_player) = 1;
