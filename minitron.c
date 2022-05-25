@@ -457,6 +457,7 @@ void handler(int none)
 {
     exit(0);
 }
+
 void move_car(uint32_t** ptr_car, char direct, int scr_xres)
 {
   switch(direct)
@@ -516,7 +517,7 @@ char set_opposite_direct(char direct, char direct_prev, char* ptr_opposite_direc
       case RIGHT:
       {
         *ptr_opposite_direct = LEFT;  
-        if( direct_prev == DOWN || direct_prev == DOWN )
+        if( direct_prev == UP || direct_prev == DOWN )
             return 1;
         else 
             return 0;
