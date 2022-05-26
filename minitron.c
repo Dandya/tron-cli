@@ -443,9 +443,10 @@ int main(int argc, char* argv[])
   }
 
   //close all
-  pthread_join(tid_control, NULL);
+  pthread_cancel(tid_control);
   pthread_join(tid_send, NULL);
-  pthread_kill(tid_syncing, 17);
+  pthread_cancel(tid_syncing);
+  while(getchar() != 'q') {}
   close(sockfd);
   munmap(ptr, map_size);
   close(fb);
