@@ -2,13 +2,13 @@ extern int work_flag;
 extern int start_flag;
 extern int need_answer;
 extern char number_step;
-
+extern int ip_opponent;
 struct args_keys
 {
   int sockfd;
   char* ptr_direct;
   char* ptr_is_ready_player;
-  struct sockaddr_in* ptr_p2_addr;
+  struct sockaddr p2_addr;
   pthread_mutex_t* ptr_mtx;
 };
 
@@ -50,8 +50,8 @@ void control_thread_nsync(struct args_keys* args)
   int sockfd = args->sockfd;
   char* ptr_direct = args->ptr_direct;
   pthread_mutex_t* ptr_mtx = args->ptr_mtx;
-  struct sockaddr* ptr_p2_addr = (struct sockaddr*)args->ptr_p2_addr;
-  int len_sockaddr = sizeof(*ptr_p2_addr);
+  struct sockaddr p2_addr = args->p2_addr;
+  int len_sockaddr = sizeof(p2_addr);
   char direction = 0;
   while(*(args->ptr_is_ready_player) != 1)
   {
@@ -66,7 +66,7 @@ void control_thread_nsync(struct args_keys* args)
     {
       pthread_mutex_lock(ptr_mtx);
       *ptr_direct = direction; 
-      sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
+      sendto(sockfd, &direction, 1, 0, &p2_addr, len_sockaddr);
       pthread_mutex_unlock(ptr_mtx);
     }
   }
@@ -78,11 +78,18 @@ void interaction_thread_nsync(struct args_keys* args)
   int sockfd = args->sockfd;
   char* ptr_direct = args->ptr_direct;
   pthread_mutex_t* ptr_mtx = args->ptr_mtx;
-  struct sockaddr* ptr_p2_addr = (struct sockaddr*)args->ptr_p2_addr;
-  int len_sockaddr = sizeof(*ptr_p2_addr);
+  struct sockaddr p2_addr = args->p2_addr;
+  int len_sockaddr = sizeof(p2_addr);
   char direction;
-
-  recvfrom(sockfd, &direction, 1, 0, ptr_p2_addr, &len_sockaddr);
+  char need_answer1 = 1;
+  while(need_answer1)
+  {
+    recvfrom(sockfd, &direction, 1, 0, &p2_addr, &len_sockaddr);
+    if( (*((struct sockaddr_in*)&p2_addr)).sin_addr.s_addr == ip_opponent )
+    {
+        need_answer1 = 0;
+    }
+  }
   *(args->ptr_is_ready_player) = 1;
   
   //wait start game
@@ -93,8 +100,9 @@ void interaction_thread_nsync(struct args_keys* args)
 
   while(work_flag)
   {
-    recvfrom(sockfd, &direction, 1, 0, ptr_p2_addr, &len_sockaddr);
-    if(direction == UP || direction == DOWN || direction == LEFT || direction == RIGHT)
+    recvfrom(sockfd, &direction, 1, 0, &p2_addr, &len_sockaddr);
+    if((direction == UP || direction == DOWN || direction == LEFT || direction == RIGHT)
+            && (*((struct sockaddr_in*)&p2_addr)).sin_addr.s_addr == ip_opponent)
     {
       pthread_mutex_lock(ptr_mtx);
       *ptr_direct = direction; 
@@ -108,8 +116,8 @@ void control_thread_sync(struct args_keys* args)
   int sockfd = args->sockfd;
   char* ptr_direct = args->ptr_direct;
   pthread_mutex_t* ptr_mtx = args->ptr_mtx;
-  struct sockaddr* ptr_p2_addr = (struct sockaddr*)args->ptr_p2_addr;
-  int len_sockaddr = sizeof(*ptr_p2_addr);
+  struct sockaddr p2_addr = args->p2_addr;
+  int len_sockaddr = sizeof(p2_addr);
   char direction = 0;
   while(*(args->ptr_is_ready_player) != 1)
   {
@@ -135,11 +143,18 @@ void interaction_thread_sync(struct args_keys* args)
   int sockfd = args->sockfd;
   char* ptr_direct = args->ptr_direct;
   pthread_mutex_t* ptr_mtx = args->ptr_mtx;
-  struct sockaddr* ptr_p2_addr = (struct sockaddr*)args->ptr_p2_addr;
-  int len_sockaddr = sizeof(*ptr_p2_addr);
+  struct sockaddr p2_addr = args->p2_addr;
+  int len_sockaddr = sizeof(p2_addr);
   char direction;
-
-  recvfrom(sockfd, &direction, 1, 0, ptr_p2_addr, &len_sockaddr);
+  char need_answer1 = 1;
+  while(need_answer1)
+  {
+    recvfrom(sockfd, &direction, 1, 0, &p2_addr, &len_sockaddr);
+    if( (*((struct sockaddr_in*)&p2_addr)).sin_addr.s_addr == ip_opponent )
+    {
+        need_answer1 = 0;
+    }
+  }
   *(args->ptr_is_ready_player) = 1;
   
   //wait start game
@@ -150,10 +165,11 @@ void interaction_thread_sync(struct args_keys* args)
 
   while(work_flag)
   {
-    recvfrom(sockfd, &direction, 1, 0, ptr_p2_addr, &len_sockaddr);
+    recvfrom(sockfd, &direction, 1, 0, &p2_addr, &len_sockaddr);
     direction -= number_step % 2;
-    if((direction == UP || direction == DOWN 
-                || direction == LEFT || direction == RIGHT) && need_answer)
+    if((direction == UP || direction == DOWN || direction == LEFT || direction == RIGHT)
+            && (*((struct sockaddr_in*)&p2_addr)).sin_addr.s_addr == ip_opponent
+            && need_answer)
     {
       *ptr_direct = direction;
       need_answer = 0;
@@ -164,8 +180,8 @@ void interaction_thread_sync(struct args_keys* args)
 void send_to_opponent(struct args_keys* args)
 {
   int sockfd = args->sockfd;
-  struct sockaddr* ptr_p2_addr = (struct sockaddr*)args->ptr_p2_addr;
-  int len_sockaddr = sizeof(*ptr_p2_addr);
+  struct sockaddr p2_addr = args->p2_addr;
+  int len_sockaddr = sizeof(p2_addr);
   char direction = 0;
   
   direction = getchar();
@@ -177,10 +193,10 @@ void send_to_opponent(struct args_keys* args)
   }
   direction = 0;
   *(args->ptr_is_ready_player) = 1;
-  sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
+  sendto(sockfd, &direction, 1, 0, &p2_addr, len_sockaddr);
   //wait start game
   while(start_flag != 1)
   {
-      sendto(sockfd, &direction, 1, 0, ptr_p2_addr, len_sockaddr);
+      sendto(sockfd, &direction, 1, 0, &p2_addr, len_sockaddr);
   }
 }

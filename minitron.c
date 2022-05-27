@@ -6,6 +6,7 @@
  * info.xres_virtual, info.yres_virtual - размер всего экрана 
 */
 
+int ip_opponent;
 int work_flag = 1;
 int start_flag = 0;
 int need_answer = 0;
@@ -103,7 +104,7 @@ int main(int argc, char* argv[])
   opponent_addr.sin_family = AF_INET;
   opponent_addr.sin_port = htons(12345);
   opponent_addr.sin_addr.s_addr = inet_addr(argv[3]);
- 
+  ip_opponent = inet_addr(argv[3]); 
   player_addr.sin_family = AF_INET;
   player_addr.sin_port = htons(12345);
   player_addr.sin_addr.s_addr = get_local_ip(opponent_addr.sin_addr.s_addr);
@@ -162,9 +163,9 @@ int main(int argc, char* argv[])
   char is_ready_p1 = 0;     //if index_player == 0 then player is master else slave
   char is_ready_p2 = 0;
   char tmp = 0;
-
-  struct args_keys args1 = {sockfd, &direct_p1, &is_ready_p1, &opponent_addr, &mutex};
-  struct args_keys args2 = {sockfd, &direct_p2, &is_ready_p2, &opponent_addr, &mutex};  
+  
+  struct args_keys args1 = {sockfd, &direct_p1, &is_ready_p1, *((struct sockaddr*)&opponent_addr), &mutex};
+  struct args_keys args2 = {sockfd, &direct_p2, &is_ready_p2, *((struct sockaddr*)&opponent_addr), &mutex};  
   void (*control_thread) (struct args_keys* args);
   void (*syncing_thread) (struct args_keys* args);
   if (mode_sync)
