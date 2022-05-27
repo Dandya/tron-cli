@@ -147,9 +147,8 @@ int main(int argc, char* argv[])
   }
 
   // init players
-  uint32_t* ptr_car_p1 = ptr + info.xres/2 - xres_area/2 + 1 + info.xres_virtual*(info.yres/2 - yres_area/2 + 3);
-  uint32_t* ptr_car_p2 = ptr + info.xres/2 - xres_area/2 + xres_area + 
-      info.xres_virtual*(info.yres/2 -yres_area/2 + yres_area-2);
+  uint32_t* ptr_car_p1 = ptr + 1 + info.xres_virtual*(3);
+  uint32_t* ptr_car_p2 = ptr + xres_area + info.xres_virtual*(yres_area-2);
   char direct_p1;
   char direct_p2;
   char direct_prev_p1 = RIGHT;
@@ -229,9 +228,6 @@ int main(int argc, char* argv[])
   }
 
   // wait
-#ifndef WITHOUTCURSOR
-  printf("For start press key(q - quit)");
-#endif
   char game_start = 1;
   while((is_ready_p1 != 1 || is_ready_p2 != 1) && work_flag == 1)
   {
@@ -254,8 +250,7 @@ int main(int argc, char* argv[])
     pthread_mutex_lock(&mutex);
     direct_p1 = RIGHT;
     direct_p2 = LEFT;
-    draw_area(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
-            yres_area, info.xres_virtual);
+    draw_area(ptr, xres_area, yres_area, info.xres_virtual);
     draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
     draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual);
     pthread_mutex_unlock(&mutex);
@@ -419,35 +414,14 @@ int main(int argc, char* argv[])
 
   //print result of game
   if(who_lose[index_player] == 0 && who_lose[0] != who_lose[1])
-  {
-      if(index_player == 0)
-        draw_area_in_color(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
-            yres_area, info.xres_virtual, RED);
-      else
-        draw_area_in_color(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
-            yres_area, info.xres_virtual, BLUE);
-  }
+    fprintf(stdout,"\t\t\tvictory!!!\n");
   else if(game_start == 1)
-  {
-      if(who_lose[index_player] == 1 && who_lose[0] != who_lose[1])
-      {
-        if(index_player == 0)
-          draw_area_in_color(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
-                yres_area, info.xres_virtual, BLUE);
-        else
-            draw_area_in_color(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
-                yres_area, info.xres_virtual, RED);
-      }
-      else
-          draw_area_in_color(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
-                yres_area, info.xres_virtual, VIOLET);
-  }
+    fprintf(stdout,"\t\t\t\t\t\t\tloss\n");
 
   //close all
   pthread_cancel(tid_control);
   pthread_join(tid_send, NULL);
   pthread_cancel(tid_syncing);
-  while(getchar() != 'q') {}
   close(sockfd);
   munmap(ptr, map_size);
   close(fb);
