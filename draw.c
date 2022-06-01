@@ -133,7 +133,10 @@ void draw_area_in_color(uint32_t *ptr, int xres, int yres, int scr_xres, uint32_
   for(int i = 0; i<xres+2; i++)
   {
       for(int j = 0; j <yres+2; j++)
+          if(ptr[i + j*scr_xres] != RED && ptr[i + j*scr_xres] != BLUE)
             ptr[i + j*scr_xres] = color;
+          else
+            ptr[i + j*scr_xres] = 0;
   }
 }
 

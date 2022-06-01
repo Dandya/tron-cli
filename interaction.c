@@ -3,6 +3,7 @@ extern int start_flag;
 extern int need_answer;
 extern char number_step;
 extern int ip_opponent;
+
 struct args_keys
 {
   int sockfd;
@@ -58,7 +59,7 @@ void control_thread_nsync(struct args_keys* args)
       usleep(1);
   }
 
-  while( direction != 'q' && work_flag )
+  while( work_flag )
   {
     direction = getchar();
     if((direction == UP || direction == DOWN 
@@ -70,7 +71,6 @@ void control_thread_nsync(struct args_keys* args)
       pthread_mutex_unlock(ptr_mtx);
     }
   }
-  work_flag = 0;
 }
 
 void interaction_thread_nsync(struct args_keys* args)
@@ -124,7 +124,7 @@ void control_thread_sync(struct args_keys* args)
       usleep(1);
   }
 
-  while( direction != 'q' && work_flag )
+  while( work_flag )
   {
     direction = getchar();
     if((direction == UP || direction == DOWN 
@@ -135,7 +135,6 @@ void control_thread_sync(struct args_keys* args)
       pthread_mutex_unlock(ptr_mtx);
     }
   }
-  work_flag = 0;
 }
 
 void interaction_thread_sync(struct args_keys* args)
@@ -184,14 +183,7 @@ void send_to_opponent(struct args_keys* args)
   int len_sockaddr = sizeof(p2_addr);
   char direction = 0;
   
-  direction = getchar();
-  if(direction == 'q')
-  {
-      work_flag = 0;
-      *(args->ptr_is_ready_player) = 1;
-      return 0;
-  }
-  direction = 0;
+  getchar();
   *(args->ptr_is_ready_player) = 1;
   sendto(sockfd, &direction, 1, 0, &p2_addr, len_sockaddr);
   //wait start game

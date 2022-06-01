@@ -28,10 +28,10 @@
 #define RIGHT 'd'
 
 
-#define RED 0x00FF0F3F
-#define BLUE 0x003080FF
-#define WHITE 0x00FFFFBF
-#define VIOLET 0xFF00FF
+#define RED    0x00FF0000
+#define BLUE   0x000000FF
+#define WHITE  0x00FFFFFF
+#define VIOLET 0x00FF00FF
 
 #include "interaction.c"
 #include "draw.c"

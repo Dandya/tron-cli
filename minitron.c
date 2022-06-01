@@ -9,9 +9,11 @@
 int ip_opponent;
 int work_flag = 1;
 int start_flag = 0;
+int exit_flag = 0;
 int need_answer = 0;
 char number_step = 0;
 static struct termios stored_settings;
+pthread_t tid_control, tid_syncing, tid_send;
 
 void handler(int none);
 void move_car(uint32_t** ptr_car, char direct, int scr_xres);
@@ -73,13 +75,8 @@ int main(int argc, char* argv[])
   
   int xres_area = atoi(argv[1]);
   int yres_area = atoi(argv[2]);
-#ifdef WITHOUTCURSOR
-  if(xres_area + 2 > info.xres || yres_area + 2 > info.yres 
+  if(xres_area + 2 > info.xres || yres_area + 2 > info.yres
           || xres_area <= 10 || yres_area <= 10) //considering the boundaries 
-#else 
-  if(xres_area + 2 > info.xres || yres_area + 2 > info.yres-32
-          || xres_area <= 10 || yres_area <= 10) //considering the boundaries and first line
-#endif
   {
     munmap(ptr, map_size);
     close(fb);
@@ -104,7 +101,8 @@ int main(int argc, char* argv[])
   opponent_addr.sin_family = AF_INET;
   opponent_addr.sin_port = htons(12345);
   opponent_addr.sin_addr.s_addr = inet_addr(argv[3]);
-  ip_opponent = inet_addr(argv[3]); 
+  ip_opponent = inet_addr(argv[3]);
+
   player_addr.sin_family = AF_INET;
   player_addr.sin_port = htons(12345);
   player_addr.sin_addr.s_addr = get_local_ip(opponent_addr.sin_addr.s_addr);
@@ -132,7 +130,6 @@ int main(int argc, char* argv[])
   }
 
   //init threads
-  pthread_t tid_control, tid_syncing, tid_send;
   pthread_attr_t attr;
   pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   
@@ -147,8 +144,10 @@ int main(int argc, char* argv[])
   }
 
   // init players
-  uint32_t* ptr_car_p1 = ptr + 1 + info.xres_virtual*(3);
-  uint32_t* ptr_car_p2 = ptr + xres_area + info.xres_virtual*(yres_area-2);
+  uint32_t* ptr_car_p1 = ptr + info.xres/2 - xres_area/2 + 1 + 
+                        info.xres_virtual*(info.yres/2 - yres_area/2 + 3);
+  uint32_t* ptr_car_p2 = ptr + info.xres/2 - xres_area/2 + xres_area + 
+                        info.xres_virtual*(info.yres/2 - yres_area/2 + yres_area - 2);
   char direct_p1;
   char direct_p2;
   char direct_prev_p1 = RIGHT;
@@ -237,6 +236,17 @@ int main(int argc, char* argv[])
   {
     game_start = 0;
   }
+
+  if( connect( sockfd, (struct sockaddr*)&opponent_addr, sizeof(*((struct sockaddr*)&opponent_addr)) ) )
+  {
+    close(sockfd);
+    munmap(ptr, map_size);
+    close(fb);
+    reset_keypress();
+    fprintf(stderr, "Error of connect\n");
+    return 2;
+  }
+    
   start_flag = 1;
 
   // start game 
@@ -250,7 +260,8 @@ int main(int argc, char* argv[])
     pthread_mutex_lock(&mutex);
     direct_p1 = RIGHT;
     direct_p2 = LEFT;
-    draw_area(ptr, xres_area, yres_area, info.xres_virtual);
+    draw_area(ptr+info.xres/2-xres_area/2+info.xres_virtual*(info.yres/2 - yres_area/2), 
+            xres_area, yres_area, info.xres_virtual);
     draw_car(ptr_car_p1, direct_p1, RED, info.xres_virtual);
     draw_car(ptr_car_p2, direct_p2, BLUE, info.xres_virtual);
     pthread_mutex_unlock(&mutex);
@@ -273,7 +284,7 @@ int main(int argc, char* argv[])
             {
                 sendto(sockfd, &tmp, 1, 0,(struct sockaddr*)(&opponent_addr), sizeof(opponent_addr));
                 ftime(&tb);
-                if(tb.time - start_s > 5)
+                if(tb.time - start_s > 1)
                 {
                     need_answer = 0;
                     work_flag = 0;
@@ -294,7 +305,7 @@ int main(int argc, char* argv[])
             {
                 sendto(sockfd, &tmp, 1, 0, (struct sockaddr*)(&opponent_addr), sizeof(opponent_addr));
                 ftime(&tb);
-                if(tb.time - start_s > 5)
+                if(tb.time - start_s > 1)
                 {
                     need_answer = 0;
                     work_flag = 0;
@@ -414,14 +425,39 @@ int main(int argc, char* argv[])
 
   //print result of game
   if(who_lose[index_player] == 0 && who_lose[0] != who_lose[1])
-    fprintf(stdout,"\t\t\tvictory!!!\n");
+  {
+      if(index_player == 0)
+        draw_area_in_color(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
+            yres_area, info.xres_virtual, RED);
+      else
+        draw_area_in_color(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
+            yres_area, info.xres_virtual, BLUE);
+  }
   else if(game_start == 1)
-    fprintf(stdout,"\t\t\t\t\t\t\tloss\n");
+  {
+      if(who_lose[index_player] == 1 && who_lose[0] != who_lose[1])
+      {
+        if(index_player == 0)
+          draw_area_in_color(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
+                yres_area, info.xres_virtual, BLUE);
+        else
+            draw_area_in_color(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
+                yres_area, info.xres_virtual, RED);
+      }
+      else
+          draw_area_in_color(ptr+info.xres/2 - xres_area/2 + info.xres_virtual*(info.yres/2 - yres_area/2), xres_area, 
+                yres_area, info.xres_virtual, VIOLET);
+  }
 
   //close all
-  pthread_cancel(tid_control);
-  pthread_join(tid_send, NULL);
-  pthread_cancel(tid_syncing);
+  if (exit_flag == 0)
+  {
+    pthread_cancel(tid_control);
+    pthread_join(tid_send, NULL);
+    pthread_cancel(tid_syncing);
+    printf("For exit press any key");
+    getchar();
+  }
   close(sockfd);
   munmap(ptr, map_size);
   close(fb);
@@ -431,7 +467,11 @@ int main(int argc, char* argv[])
 
 void handler(int none)
 {
-    exit(0);
+    work_flag = 0;
+    exit_flag = 1;
+    pthread_cancel(tid_control);
+    pthread_cancel(tid_send);
+    pthread_cancel(tid_syncing);
 }
 
 void move_car(uint32_t** ptr_car, char direct, int scr_xres)
